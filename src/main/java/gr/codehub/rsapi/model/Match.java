@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -26,6 +23,8 @@ public class Match {
     private Date matchDate;
     private MatchType matchType;
     private Status status;
+    @ManyToOne
     private Applicant applicant;
+    @ManyToOne
     private JobOffer jobOffer;
 }
