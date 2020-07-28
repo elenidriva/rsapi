@@ -1,11 +1,14 @@
 package gr.codehub.rsapi.service;
 
+import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
+import gr.codehub.rsapi.exception.ApplicantCreationException;
 import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.ApplicantRepository;
+import gr.codehub.rsapi.repository.ApplicantSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +20,32 @@ import java.util.List;
 public class ApplicantServiceImpl implements ApplicantService {
 
     private ApplicantRepository applicantRepository;
+    private ApplicantSkillRepository applicantSkillRepository;
 
     @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository) {
         this.applicantRepository = applicantRepository;
+        this.applicantSkillRepository = applicantSkillRepository;
     }
 
     // constructor
     @Override
-    public Applicant addApplicant(Applicant applicant) {
+    public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
+        Applicant applicant = new Applicant();
+        if (applicantDto == null) throw new ApplicantCreationException("Null Exception");
+        if (applicantDto.getEmail() == null || !applicantDto.getEmail().contains("@"))
+            throw new ApplicantCreationException(" Email does not contain @");
+        applicant.setFirstName(applicantDto.getFirstName());
+        applicant.setLastName(applicantDto.getLastName());
+        applicant.setAddress(applicantDto.getAddress());
+        applicant.setRegion(applicantDto.getRegion());
+        applicant.setExperienceLevel(applicantDto.getExperienceLevel());
+        applicant.setDegreeLevel(applicantDto.getDegreeLevel());
+        applicant.setApplicantSkillList(applicantDto.getApplicantSkillList());
+        applicant.setEmail(applicantDto.getEmail());
+        applicant.setApplicationDate(applicantDto.getApplicationDate());
+        applicant.setStatus(applicantDto.getStatus());
+
         return applicantRepository.save(applicant);
     }
 
@@ -42,25 +62,28 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     @Override
     public Applicant getApplicant(int applicantIndex) throws ApplicantNotFoundException {
-        return applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Customer in the DB."));
+        return applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant in the DB."));
     }
 
     @Override
-    public Applicant updateApplicant(Applicant applicant, int applicantIndex) throws ApplicantNotFoundException {
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant."));
+    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException {
 
-        applicantInDb.setFirstName(applicant.getFirstName());
-        applicantInDb.setLastName(applicant.getLastName());
-        applicantInDb.setStatus(applicant.getStatus());
-        applicantInDb.setAddress(applicant.getAddress());
-        applicantInDb.setDegreeLevel(applicant.getDegreeLevel());
-        applicantInDb.setExperienceLevel(applicant.getExperienceLevel());
-        applicantInDb.setApplicantSkillList(applicant.getApplicantSkillList());
-        applicantInDb.setRegion(applicant.getRegion());
+        Applicant applicant = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant."));
 
-        applicantRepository.save(applicantInDb);
+        applicant.setFirstName(applicantDto.getFirstName());
+        applicant.setLastName(applicantDto.getLastName());
+        applicant.setStatus(applicantDto.getStatus());
+        applicant.setAddress(applicantDto.getAddress());
+        applicant.setDegreeLevel(applicantDto.getDegreeLevel());
+        applicant.setExperienceLevel(applicantDto.getExperienceLevel());
+        applicant.setApplicantSkillList(applicantDto.getApplicantSkillList());
+        applicant.setRegion(applicantDto.getRegion());
+        applicant.setEmail(applicantDto.getEmail());
 
-        return applicantInDb;
+
+        applicantRepository.save(applicant);
+
+        return applicant;
     }
 
     @Override
