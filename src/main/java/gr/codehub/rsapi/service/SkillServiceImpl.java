@@ -5,6 +5,7 @@ import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.SkillRepository;
+import gr.codehub.rsapi.services.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,12 @@ import java.util.List;
 
 @Service
 @Qualifier("ImplDB")
-public class SkillServiceImpl implements gr.codehub.rsapi.services.SkillService {
+public class SkillServiceImpl implements SkillService {
     @Autowired
     private SkillRepository skillRepository;
 
     @Override
-    public List<Skill> getSkill() {
+    public List<Skill> getSkills() {
         return skillRepository.findAll();
     }
 
@@ -29,9 +30,8 @@ public class SkillServiceImpl implements gr.codehub.rsapi.services.SkillService 
      */
 
     @Override
-    public Skill addSkill(int skillId) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
-        Skill skill = new Skill();
-        Skill skillFromDb = skillRepository.findById(skillId).orElseThrow(() -> new SkillNotFoundException("Skill not found"));
+    public Skill addSkill(Skill skill) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
+        Skill skillFromDb = skillRepository.findById(skill.getId()).orElseThrow(() -> new SkillNotFoundException("Skill not found"));
         if (skill == null) {
             throw new SkillCreationException("Null Skill");
         }
