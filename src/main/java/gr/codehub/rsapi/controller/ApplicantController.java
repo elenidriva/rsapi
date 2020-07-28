@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class ApplicantController {
 
-@Autowired
+    @Autowired
     private ApplicantService applicantService;
 
 
@@ -27,9 +27,6 @@ public class ApplicantController {
     public Applicant getApplicant(@PathVariable int id) throws ApplicantNotFoundException {
         return applicantService.getApplicant(id);
     }
-
-
-
 
 
 }
