@@ -1,4 +1,4 @@
-package gr.codehub.rsapi.services;
+package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
@@ -11,6 +11,8 @@ public interface SkillService {
     List<Skill> getSkills();
 
     Skill addSkill(Skill skill) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException;
+
+    List<Skill> addSkills(List<Skill> skills);
 
     //Merge skill --> package utility --> creating method with contains
 

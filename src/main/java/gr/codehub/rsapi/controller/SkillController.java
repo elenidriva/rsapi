@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import gr.codehub.rsapi.services.SkillService;
+import gr.codehub.rsapi.service.SkillService;
 
 import java.util.List;
 
