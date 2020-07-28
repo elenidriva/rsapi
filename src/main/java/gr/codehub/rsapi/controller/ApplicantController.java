@@ -1,5 +1,6 @@
 package gr.codehub.rsapi.controller;
 
+import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.service.ApplicantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,8 @@ public class ApplicantController {
     }
 
 
-
     @GetMapping("applicant/{id}")
-    public Applicant getApplicant(@PathVariable int id)  {
+    public Applicant getApplicant(@PathVariable int id) throws ApplicantNotFoundException {
         return applicantService.getApplicant(id);
     }
 
