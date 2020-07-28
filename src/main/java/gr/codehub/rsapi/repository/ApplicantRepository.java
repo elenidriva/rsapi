@@ -15,8 +15,8 @@ import java.util.List;
 public interface ApplicantRepository extends JpaRepository<Applicant, Integer> {
 
 
-    @Query("SELECT c FROM Applicant c WHERE (:name is null or c.name = :name) and (:region is null or c.region = :region) and (:date is null or c.date =:date) and (:skill is null or c.skill =:skill)")
-    List<Applicant> findApplicantByCriteria(@Param("name") String name, @Param("region") Region region, @Param("date") Date date, @Param("skill") Skill skill );
+    @Query(value = "SELECT c FROM Applicant c WHERE (:lastName is null or c.lastName = :lastName) and (:region is null or c.region = :region) and (:date is null or c.date =:date) and (:skill is null or c.skill =:skill)", nativeQuery = true)
+    List<Applicant> findApplicantByCriteria(@Param("lastName") String lastName, @Param("region") Region region, @Param("date") Date date, @Param("skill") Skill skill);
 
 
 }
