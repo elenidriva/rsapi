@@ -36,11 +36,8 @@ public class Applicant {
     private ExperienceLevel experienceLevel;
     private Status status;
 
-    @OneToMany(mappedBy="applicant")
+    @OneToMany(mappedBy = "applicant")
     private List<ApplicantSkill> applicantSkillList;
-
-
-
 
 
 }

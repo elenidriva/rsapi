@@ -5,10 +5,7 @@ public enum DegreeLevel {
     ASSOCIATE(1),
     BACHELOR(2),
     MASTER(3),
-    PHD(4)
-    ;
-
-
+    PHD(4);
 
 
     private int value;

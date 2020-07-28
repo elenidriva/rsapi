@@ -34,9 +34,8 @@ public class JobOffer {
     private Status status;
     private Region region;
 
-    @OneToMany(mappedBy="jobOffer")
+    @OneToMany(mappedBy = "jobOffer")
     private List<JobOfferSkill> jobOfferSkillList;
-
 
 
 }
