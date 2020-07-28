@@ -29,13 +29,13 @@ public class SkillServiceImpl implements gr.codehub.rsapi.services.SkillService 
      */
 
     @Override
-    public Skill addSkill( int skillId) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
+    public Skill addSkill(int skillId) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
         Skill skill = new Skill();
-        Skill skillFromDb = skillRepository.findById(skillId).orElseThrow(()-> new SkillNotFoundException("Skill not found"));
-        if (skill == null){
+        Skill skillFromDb = skillRepository.findById(skillId).orElseThrow(() -> new SkillNotFoundException("Skill not found"));
+        if (skill == null) {
             throw new SkillCreationException("Null Skill");
         }
-        if(skillFromDb.equals(skill)) {
+        if (skillFromDb.equals(skill)) {
             throw new SkillIsAlreadyExistException("Skill Already Exists");
         }
         skill.setId(skillFromDb.getId());
