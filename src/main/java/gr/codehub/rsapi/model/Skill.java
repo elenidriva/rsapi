@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +19,8 @@ public class Skill {
     private int id;
     private String title;
 
-    public Skill(String skillTitle) {
-        this.title = skillTitle;
+
+    public Skill(String title) {
+        this.title = title;
     }
 }
