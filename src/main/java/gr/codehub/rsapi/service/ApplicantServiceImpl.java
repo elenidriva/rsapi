@@ -4,8 +4,11 @@ import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.exception.ApplicantCreationException;
+import gr.codehub.rsapi.exception.ApplicantIsInactive;
 import gr.codehub.rsapi.exception.ApplicantNotFoundException;
+import gr.codehub.rsapi.exception.ApplicantUpdateException;
 import gr.codehub.rsapi.model.Applicant;
+import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.ApplicantRepository;
 import gr.codehub.rsapi.repository.ApplicantSkillRepository;
@@ -13,7 +16,7 @@ import gr.codehub.rsapi.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 //TODO Dto
@@ -23,9 +26,8 @@ public class ApplicantServiceImpl implements ApplicantService {
     private ApplicantRepository applicantRepository;
     private ApplicantSkillRepository applicantSkillRepository;
     private SkillRepository skillRepository;
-
     @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository,SkillRepository skillRepository) {
         this.applicantRepository = applicantRepository;
         this.applicantSkillRepository = applicantSkillRepository;
         this.skillRepository = skillRepository;
@@ -35,9 +37,8 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
         Applicant applicant = new Applicant();
-        if (applicantDto == null) throw new ApplicantCreationException("Null Exception");
-        if (applicantDto.getEmail() == null || !applicantDto.getEmail().contains("@"))
-            throw new ApplicantCreationException(" Email does not contain @");
+        if (applicantDto == null) throw new ApplicantCreationException("You did not add any of the required fields");
+
         applicant.setFirstName(applicantDto.getFirstName());
         applicant.setLastName(applicantDto.getLastName());
         applicant.setAddress(applicantDto.getAddress());
@@ -45,21 +46,23 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicant.setExperienceLevel(applicantDto.getExperienceLevel());
         applicant.setDegreeLevel(applicantDto.getDegreeLevel());
         applicant.setApplicantSkillList(applicantDto.getApplicantSkillList());
-        applicant.setEmail(applicantDto.getEmail());
-        applicant.setApplicationDate(applicantDto.getApplicationDate());
-        applicant.setStatus(applicantDto.getStatus());
+        applicant.setApplicationDate(LocalDate.now());
+        applicant.setStatus(Status.ACTIVE);
 
-        return applicantRepository.save(applicant);
+        applicantRepository.save(applicant);
+        return applicant;
     }
 
     @Override
-    public boolean setApplicantStatus(int applicantIndex) throws ApplicantNotFoundException {
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot change Applicant's status, since there is no such Applicant in the DB."));
-
-        if (applicantInDb.getStatus().equals(Status.ACTIVE)) applicantInDb.setStatus(Status.INACTIVE);
+    public boolean setApplicantInactive(int applicantIndex) throws ApplicantNotFoundException, ApplicantIsInactive {
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+        Applicant applicant;
+        if (applicantInDb.getStatus().equals(Status.INACTIVE))
+            throw new ApplicantIsInactive("Applicant with id:" + applicantIndex + " is already inactive.");
         else applicantInDb.setStatus(Status.ACTIVE);
-
-        applicantRepository.save(applicantInDb);
+        applicant = applicantInDb;
+        applicant.setStatus(Status.INACTIVE);
+        applicantRepository.save(applicant);
         return true;
     }
 
@@ -69,24 +72,24 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException {
+    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException, ApplicantUpdateException {
 
-        Applicant applicant = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant."));
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+        if (applicantInDb.getStatus() == Status.INACTIVE)
+            throw new ApplicantUpdateException("Failed to update Applicant, because the Applicant is inactive");
+        applicantInDb.setFirstName(applicantDto.getFirstName());
+        applicantInDb.setLastName(applicantDto.getLastName());
+        applicantInDb.setStatus(Status.ACTIVE);
+        applicantInDb.setAddress(applicantDto.getAddress());
+        applicantInDb.setDegreeLevel(applicantDto.getDegreeLevel());
+        applicantInDb.setExperienceLevel(applicantDto.getExperienceLevel());
+        applicantInDb.setApplicantSkillList(applicantDto.getApplicantSkillList());
+        applicantInDb.setRegion(applicantDto.getRegion());
 
-        applicant.setFirstName(applicantDto.getFirstName());
-        applicant.setLastName(applicantDto.getLastName());
-        applicant.setStatus(applicantDto.getStatus());
-        applicant.setAddress(applicantDto.getAddress());
-        applicant.setDegreeLevel(applicantDto.getDegreeLevel());
-        applicant.setExperienceLevel(applicantDto.getExperienceLevel());
-        applicant.setApplicantSkillList(applicantDto.getApplicantSkillList());
-        applicant.setRegion(applicantDto.getRegion());
-        applicant.setEmail(applicantDto.getEmail());
 
+        applicantRepository.save(applicantInDb);
 
-        applicantRepository.save(applicant);
-
-        return applicant;
+        return applicantInDb;
     }
 
     @Override
@@ -95,26 +98,34 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public List<Applicant> findApplicantsByCriteria(String lastName, Region region, Date date, Skill skill) {
+    public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date, Skill skill) {
 
-        return applicantRepository.findApplicantByCriteria(lastName, region, date, skill);
+        return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date, skill);
 
     }
 
     @Override
-    public void addApplicantSkills(List<Applicant> applicants) {
-        for (Applicant applicant : applicants) {
-            applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
+    public boolean deleteApplicant(int applicantIndex) throws ApplicantNotFoundException {
+        applicantRepository.deleteById(applicantIndex);
+        return true;
+    }
+
+    public boolean insertApplicantSkill( Applicant applicant, Skill skill) {
+        ApplicantSkill applicantSkill = new ApplicantSkill();
+        applicantSkill.setApplicant(applicant);
+        Skill skillInDb = skillRepository.findBySkillTitle(skill.getTitle());
+        if (skillInDb == null) {
+            skillRepository.save(new Skill(skillInDb.getTitle()));
+            return true;
         }
+        return false;
     }
 
-    @Override
-    public List<Applicant> addApplicants(List<Applicant> applicants) {
-        return applicantRepository.saveAll(applicants);
-    }
 
-    @Override
-    public Applicant addApplicant(Applicant applicant) {
-        return applicantRepository.save(applicant);
-    }
+//
+//                Skill skillInDb = skillRepository.f
+//                findByName(skill).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+
+
+
 }

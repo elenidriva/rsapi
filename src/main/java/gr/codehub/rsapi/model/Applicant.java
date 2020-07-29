@@ -1,5 +1,6 @@
 package gr.codehub.rsapi.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,22 +20,21 @@ import java.util.List;
 @Entity
 public class Applicant {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     // Primitive types for Sql
-    private String firstName;
+    private String firstName; //*
 
     // @Column(name = "lastName", nullable = false, unique = false) // name -> how it's called in the base. nullable (default -> true)
-    private String lastName;
-    private String address;
-    private Date applicationDate;
-    private String email;
+    private String lastName; //*
+    private String address;// *
 
-    private Region region;
-    private DegreeLevel degreeLevel;
-    private ExperienceLevel experienceLevel;
+    private LocalDate applicationDate;
+
+    private Region region; //*
+    private DegreeLevel degreeLevel; //*
+    private ExperienceLevel experienceLevel; //*
     private Status status;
 
     @OneToMany(mappedBy = "applicant")
