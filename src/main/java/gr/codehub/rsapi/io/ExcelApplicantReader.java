@@ -25,9 +25,8 @@ public class ExcelApplicantReader implements Reader<Applicant> {
     @Override
     public List<Applicant> readFromExcel() throws FileNotFoundException {
         Logger.log("Read Applicants from Given Excel File");
-        List<Applicant> applicantList = new ArrayList<>();
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
-
+        List<Applicant> applicantList = new ArrayList<>();
         try {
             //create a workbook instance to hold reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(data);
@@ -83,8 +82,12 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         applicant.setLastName(cellValues.get(1));
         applicant.setAddress(cellValues.get(2));
         applicant.setRegion(Region.findRegionByLocation(cellValues.get(3)));
-        applicant.setDegreeLevel(DegreeLevel.findDegreeLevel(cellValues.get(4)));
-        applicant.setExperienceLevel(ExperienceLevel.findDExpLevel(cellValues.get(5)));
+
+        //DegreeLevel degreeLevel;
+        //applicant.setDegreeLevel(cellValues.get(4));
+
+        //ExperienceLevel experienceLevel ;
+        //applicant.setExperienceLevel(cellValues.get(experienceLevel));
         return applicant;
     }
 }
