@@ -1,16 +1,15 @@
 package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
+import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.JobOfferRepository;
-import lombok.var;
+import gr.codehub.rsapi.repository.JobOfferSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +26,18 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Autowired
     private JobOfferRepository jobOfferRepository;
 
+    @Autowired
+    private JobOfferSkillRepository jobOfferSkillRepository;
+
     @Override
     public JobOffer addJobOffer(JobOffer jobOffer) {
 
         return jobOfferRepository.save(jobOffer);
+    }
+
+    @Override
+    public List<JobOffer> addJobOffers(List<JobOffer> jobOffers) {
+        return jobOfferRepository.saveAll(jobOffers);
     }
 
     /**
@@ -92,4 +99,11 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferInDb;
     }
 
+
+    @Override
+    public void addJobOfferSkills(List<JobOffer> jobOffers){
+        for(JobOffer jobOffer: jobOffers){
+            jobOfferSkillRepository.saveAll(jobOffer.getJobOfferSkillList());
+        }
+    }
 }

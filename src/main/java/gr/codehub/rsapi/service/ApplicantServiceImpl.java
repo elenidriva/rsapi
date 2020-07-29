@@ -102,17 +102,15 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public List<Applicant> addApplicants(List<Applicant> applicants) {
-        return applicantRepository.saveAll(applicants);
-    }
-
-    //PERHAPS TO BE MOVED
-
-    @Override
-    public void addApplicantSkills(List<Applicant> applicants){
-        for(Applicant applicant: applicants){
+    public void addApplicantSkills(List<Applicant> applicants) {
+        for (Applicant applicant : applicants) {
             applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
         }
+    }
+
+    @Override
+    public List<Applicant> addApplicants(List<Applicant> applicants) {
+        return applicantRepository.saveAll(applicants);
     }
 
     @Override

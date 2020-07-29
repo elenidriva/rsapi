@@ -1,5 +1,6 @@
 package gr.codehub.rsapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
@@ -36,7 +37,7 @@ public class JobOffer {
     private Region region;
 
     @OneToMany(mappedBy = "jobOffer")
-    @ToString.Exclude
+    @JsonIgnore
     private List<JobOfferSkill> jobOfferSkillList;
 
 

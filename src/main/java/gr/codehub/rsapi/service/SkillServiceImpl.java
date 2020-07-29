@@ -3,9 +3,7 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
-import gr.codehub.rsapi.model.Applicant;
-import gr.codehub.rsapi.model.ApplicantSkill;
-import gr.codehub.rsapi.model.Skill;
+import gr.codehub.rsapi.model.*;
 import gr.codehub.rsapi.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,7 +59,7 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public void addApplicantSkillsFromReader(List<ApplicantSkill> applicants) {
+    public void addApplicantSkillsFromReader(List<Applicant> applicants) {
         for(Applicant applicant: applicants){
             for(ApplicantSkill applicantSkill: applicant.getApplicantSkillList()){
                 Optional<Skill> skillOptional = skillRepository.findSkillByTitle(applicantSkill.getSkill().getTitle());
@@ -72,6 +70,23 @@ public class SkillServiceImpl implements SkillService {
                 //else set found skill to current applicant (to get the database id)
                 else{
                     applicantSkill.setSkill(skillOptional.get());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void addJobOfferSkillsFromReader(List<JobOffer> jobOffers) {
+        for(JobOffer jobOffer: jobOffers){
+            for(JobOfferSkill jobOfferSkill: jobOffer.getJobOfferSkillList()){
+                Optional<Skill> skillOptional = skillRepository.findSkillByTitle(jobOfferSkill.getSkill().getTitle());
+                if(!skillOptional.isPresent()){
+                    Skill savedSkill = skillRepository.save(jobOfferSkill.getSkill());
+                    jobOfferSkill.setSkill(savedSkill);
+                }
+                //else set found skill to current applicant (to get the database id)
+                else{
+                    jobOfferSkill.setSkill(skillOptional.get());
                 }
             }
         }

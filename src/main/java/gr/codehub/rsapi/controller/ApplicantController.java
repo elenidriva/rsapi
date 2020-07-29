@@ -58,12 +58,13 @@ public class ApplicantController {
         return applicantService.findApplicantsByCriteria(lastName, region, date, skill);
     }
 
+
     @GetMapping(value = "excelApplicants")
     public List<Applicant> addApplicantsFromReaderNew() throws FileNotFoundException {
         ExcelApplicantReader excelApplicantReader = new ExcelApplicantReader();
         List<Applicant> applicantList = excelApplicantReader.readFromExcel();
         List<Applicant> savedApplicants = applicantService.addApplicants(applicantList);
-        //skillService.addApplicantSkillsFromReader(savedApplicants);
+        skillService.addApplicantSkillsFromReader(savedApplicants);
         applicantService.addApplicantSkills(savedApplicants);
         return savedApplicants;
     }

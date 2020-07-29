@@ -2,6 +2,7 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
+import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 
@@ -22,9 +23,14 @@ public interface JobOfferService {
 
     JobOffer addJobOffer(JobOffer jobOffer);
 
+    List<JobOffer> addJobOffers(List<JobOffer> jobOffers);
+
+
+
     List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, Date date, Skill skill);
 
 
+    void addJobOfferSkills(List<JobOffer> jobOffers);
 }
 
 
