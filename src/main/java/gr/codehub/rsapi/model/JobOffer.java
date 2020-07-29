@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.model;
 
-import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
@@ -9,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -25,11 +24,9 @@ public class JobOffer {
     private String positionTitle;
     private String company;
 
-    private String description;
-    private Date jobOfferDate;
+    private LocalDate jobOfferDate;
 
 
-    private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
     private Status status;
     private Region region;

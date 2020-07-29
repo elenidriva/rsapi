@@ -1,11 +1,15 @@
 package gr.codehub.rsapi.service;
 
+import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
+import gr.codehub.rsapi.exception.JobOfferCreationException;
+import gr.codehub.rsapi.exception.JobOfferIsInactive;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
+import gr.codehub.rsapi.exception.JobOfferUpdateException;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface JobOfferService {
@@ -18,12 +22,13 @@ public interface JobOfferService {
 
     JobOffer getJobOffer(int jobOfferId);
 
-    JobOffer updateJobOffer(JobOffer jobOffer, int jobOfferId) throws JobOfferNotFoundException;
+    JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException;
 
-    JobOffer addJobOffer(JobOffer jobOffer);
+    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException;
 
-    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, Date date, Skill skill);
+    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date, Skill skill);
 
+    boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive;
 
 }
 
