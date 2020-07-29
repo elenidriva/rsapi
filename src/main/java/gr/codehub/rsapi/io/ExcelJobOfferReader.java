@@ -69,15 +69,15 @@ public class ExcelJobOfferReader {
 //
 //        return applicantList;
 //    }
-
-    private Applicant extractApplicant(Applicant applicant, List<String> cellValues) {
-
-        applicant.setFirstName(cellValues.get(0));
-        applicant.setLastName(cellValues.get(1));
-        applicant.setAddress(cellValues.get(2));
-        applicant.setRegion(Region.findRegionByLocation(cellValues.get(3)));
-        applicant.setDegreeLevel(DegreeLevel.findDegreeLevel(cellValues.get(4)));
-        applicant.setExperienceLevel(ExperienceLevel.findDExpLevel(cellValues.get(5)));
-        return applicant;
-    }
+//
+//    private Applicant extractJobOffer(JobOffer jobOffer, List<String> cellValues) {
+//
+//        jobOffer.setCompany(cellValues.get(0));
+//        jobOffer.setPositionTitle(cellValues.get(1));
+//        applicant.setAddress(cellValues.get(2));
+//        applicant.setRegion(Region.findRegionByLocation(cellValues.get(3)));
+//        applicant.setDegreeLevel(DegreeLevel.findDegreeLevel(cellValues.get(4)));
+//        applicant.setExperienceLevel(ExperienceLevel.findDExpLevel(cellValues.get(5)));
+//        return applicant;
+//    }
 }

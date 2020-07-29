@@ -27,4 +27,11 @@ public interface ApplicantService {
     List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date, Skill skill);
 
     boolean deleteApplicant(int applicantIndex) throws ApplicantNotFoundException;
+
+    List<Applicant> addApplicants(List<Applicant> applicants);
+
+    //PERHAPS TO BE MOVED
+    void addApplicantSkills(List<Applicant> applicants);
+
+    Applicant addApplicant(Applicant applicant);
 }

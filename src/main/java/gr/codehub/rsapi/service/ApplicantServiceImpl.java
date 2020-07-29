@@ -110,6 +110,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         return true;
     }
 
+
     public boolean insertApplicantSkill( Applicant applicant, Skill skill) {
         ApplicantSkill applicantSkill = new ApplicantSkill();
         applicantSkill.setApplicant(applicant);
@@ -121,6 +122,24 @@ public class ApplicantServiceImpl implements ApplicantService {
         return false;
     }
 
+    @Override
+    public List<Applicant> addApplicants(List<Applicant> applicants) {
+        return applicantRepository.saveAll(applicants);
+    }
+
+    //PERHAPS TO BE MOVED
+
+    @Override
+    public void addApplicantSkills(List<Applicant> applicants){
+        for(Applicant applicant: applicants){
+            applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
+        }
+    }
+
+    @Override
+    public Applicant addApplicant(Applicant applicant) {
+        return applicantRepository.save(applicant);
+    }
 
 //
 //                Skill skillInDb = skillRepository.f
