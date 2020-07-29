@@ -24,4 +24,10 @@ public interface ApplicantService {
 
     List<Applicant> findApplicantsByCriteria(String lastName, Region region, Date date, Skill skill);
 
+    List<Applicant> addApplicants(List<Applicant> applicants);
+
+    //PERHAPS TO BE MOVED
+    void addApplicantSkills(List<Applicant> applicants);
+
+    Applicant addApplicant(Applicant applicant);
 }

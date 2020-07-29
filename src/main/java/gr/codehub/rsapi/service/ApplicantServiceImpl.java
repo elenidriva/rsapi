@@ -9,6 +9,7 @@ import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.ApplicantRepository;
 import gr.codehub.rsapi.repository.ApplicantSkillRepository;
+import gr.codehub.rsapi.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,13 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     private ApplicantRepository applicantRepository;
     private ApplicantSkillRepository applicantSkillRepository;
+    private SkillRepository skillRepository;
 
     @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
         this.applicantRepository = applicantRepository;
         this.applicantSkillRepository = applicantSkillRepository;
+        this.skillRepository = skillRepository;
     }
 
     // constructor
@@ -98,4 +101,22 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     }
 
+    @Override
+    public List<Applicant> addApplicants(List<Applicant> applicants) {
+        return applicantRepository.saveAll(applicants);
+    }
+
+    //PERHAPS TO BE MOVED
+
+    @Override
+    public void addApplicantSkills(List<Applicant> applicants){
+        for(Applicant applicant: applicants){
+            applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
+        }
+    }
+
+    @Override
+    public Applicant addApplicant(Applicant applicant) {
+        return applicantRepository.save(applicant);
+    }
 }

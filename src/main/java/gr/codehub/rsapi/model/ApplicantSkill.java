@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -18,7 +19,9 @@ public class ApplicantSkill {
     private int id;
     @JsonIgnore
     @ManyToOne
+    @ToString.Exclude
     private Applicant applicant;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Skill skill;
 }

@@ -7,6 +7,7 @@ import gr.codehub.rsapi.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -37,6 +38,7 @@ public class Applicant {
     private Status status;
 
     @OneToMany(mappedBy = "applicant")
+    @ToString.Exclude
     private List<ApplicantSkill> applicantSkillList;
 
 
