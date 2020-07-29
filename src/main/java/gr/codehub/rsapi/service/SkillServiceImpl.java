@@ -3,6 +3,8 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
+import gr.codehub.rsapi.model.Applicant;
+import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Qualifier("ImplDB")
@@ -43,7 +46,34 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public List<Skill> addSkills(List<Skill> skills) {
-        return skillRepository.saveAll(skills);
+    public List<Skill> addSkillsFromReader(List<Skill> skills) {
+        for(Skill skill: skills){
+            Optional<Skill> skillOptional = skillRepository.findSkillByTitle(skill.getTitle());
+            if(!skillOptional.isPresent()){
+                skillRepository.save(skill);
+            }
+            //if the skill exists, then get its id
+            else{
+                skill.setId(skillOptional.get().getId());
+            }
+        }
+        return skills;
+    }
+
+    @Override
+    public void addApplicantSkillsFromReader(List<ApplicantSkill> applicants) {
+        for(Applicant applicant: applicants){
+            for(ApplicantSkill applicantSkill: applicant.getApplicantSkillList()){
+                Optional<Skill> skillOptional = skillRepository.findSkillByTitle(applicantSkill.getSkill().getTitle());
+                if(!skillOptional.isPresent()){
+                    Skill savedSkill = skillRepository.save(applicantSkill.getSkill());
+                    applicantSkill.setSkill(savedSkill);
+                }
+                //else set found skill to current applicant (to get the database id)
+                else{
+                    applicantSkill.setSkill(skillOptional.get());
+                }
+            }
+        }
     }
 }

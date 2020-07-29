@@ -7,6 +7,7 @@ import gr.codehub.rsapi.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,6 +36,7 @@ public class JobOffer {
     private Region region;
 
     @OneToMany(mappedBy = "jobOffer")
+    @ToString.Exclude
     private List<JobOfferSkill> jobOfferSkillList;
 
 

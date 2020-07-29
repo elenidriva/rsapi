@@ -19,13 +19,13 @@ import java.util.List;
  * Reading Skills from datarsapi.xlsx
  * Adding Skills into ArrayList
  */
-public class ExcelSkillReader implements SkillReader {
-    public static List<Skill> readSkillFromExcel() throws FileNotFoundException {
-        Logger.log("Read Skills from Given Excel File");
-//        List<String> excelLines = new ArrayList<>();
+public class ExcelSkillReader implements Reader<Skill> {
 
-        List<Skill> skills = new ArrayList<>();
+    public List<Skill> readFromExcel() throws FileNotFoundException {
+        Logger.log("Read Skills from Given Excel File");
+
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
+        List<Skill> skills = new ArrayList<>();
         try {
             //create a workbook instance to hold reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(data);
@@ -61,8 +61,5 @@ public class ExcelSkillReader implements SkillReader {
         return skills;
     }
 
-    @Override
-    public List<Skill> readSkills() {
-        return null;
-    }
+
 }
