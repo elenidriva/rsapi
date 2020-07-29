@@ -6,12 +6,14 @@ import gr.codehub.rsapi.exception.ApplicantCreationException;
 import gr.codehub.rsapi.exception.ApplicantIsInactive;
 import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.io.ExcelApplicantReader;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -68,6 +70,15 @@ public class ApplicantController {
         return applicantService.setApplicantInactive(id);
     }
 
+    @GetMapping(value = "excelApplicants")
+    public List<Applicant> addApplicantsFromReaderNew() throws FileNotFoundException {
+        ExcelApplicantReader excelApplicantReader = new ExcelApplicantReader();
+        List<Applicant> applicantList = excelApplicantReader.readFromExcel();
+        List<Applicant> savedApplicants = applicantService.addApplicants(applicantList);
+        //skillService.addApplicantSkillsFromReader(savedApplicants);
+        applicantService.addApplicantSkills(savedApplicants);
+        return savedApplicants;
+    }
 
 }
 
