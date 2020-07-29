@@ -20,6 +20,7 @@ public class Skill {
     private String title;
 
 
-
-
+    public Skill(String title) {
+        this.title = title;
+    }
 }
