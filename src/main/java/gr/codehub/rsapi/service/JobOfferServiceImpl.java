@@ -1,16 +1,19 @@
 package gr.codehub.rsapi.service;
 
+import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
+import gr.codehub.rsapi.enums.Status;
+import gr.codehub.rsapi.exception.JobOfferCreationException;
+import gr.codehub.rsapi.exception.JobOfferIsInactive;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.model.Applicant;
+import gr.codehub.rsapi.exception.JobOfferUpdateException;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.JobOfferRepository;
-import gr.codehub.rsapi.repository.JobOfferSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,18 +29,23 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Autowired
     private JobOfferRepository jobOfferRepository;
 
-    @Autowired
-    private JobOfferSkillRepository jobOfferSkillRepository;
-
     @Override
-    public JobOffer addJobOffer(JobOffer jobOffer) {
+    public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException {
+        JobOffer jobOffer = new JobOffer();
+        if (jobOfferDto == null ||
+                jobOfferDto.getCompany() == null ||
+                jobOfferDto.getExperienceLevel() == null ||
+                jobOfferDto.getPositionTitle() == null)
+            throw new JobOfferCreationException("Failed to create Job Offer, since there was no sufficient input given");
+
+        jobOffer.setPositionTitle(jobOfferDto.getPositionTitle());
+        jobOffer.setCompany(jobOfferDto.getCompany());
+        jobOffer.setExperienceLevel(jobOfferDto.getExperienceLevel());
+        jobOffer.setRegion(jobOfferDto.getRegion());
+        jobOffer.setStatus(Status.ACTIVE);
+        jobOffer.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
 
         return jobOfferRepository.save(jobOffer);
-    }
-
-    @Override
-    public List<JobOffer> addJobOffers(List<JobOffer> jobOffers) {
-        return jobOfferRepository.saveAll(jobOffers);
     }
 
     /**
@@ -46,20 +54,19 @@ public class JobOfferServiceImpl implements JobOfferService {
      **/
 
     @Override
-    public JobOffer updateJobOffer(JobOffer jobOffer, int jobOfferId) throws JobOfferNotFoundException {
+    public JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException {
         JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferId)
                 .orElseThrow(
                         () -> new JobOfferNotFoundException("Not such job offer"));
-        jobOfferInDb.setJobOfferDate(jobOffer.getJobOfferDate());
-        jobOfferInDb.setRegion(jobOffer.getRegion());
-        jobOfferInDb.setExperienceLevel(jobOffer.getExperienceLevel());
-        jobOfferInDb.setDegreeLevel(jobOffer.getDegreeLevel());
-        jobOfferInDb.setPositionTitle(jobOffer.getPositionTitle());
-        jobOfferInDb.setCompany(jobOffer.getCompany());
-        jobOfferInDb.setDescription(jobOffer.getDescription());
+        if (jobOfferInDb.getStatus() == Status.INACTIVE)
+            throw new JobOfferUpdateException("Failed to update Job Offer, because Job is inactive");
+        jobOfferInDb.setRegion(jobOfferDto.getRegion());
+        jobOfferInDb.setExperienceLevel(jobOfferDto.getExperienceLevel());
+        jobOfferInDb.setPositionTitle(jobOfferDto.getPositionTitle());
+        jobOfferInDb.setCompany(jobOfferDto.getCompany());
         // allazei to status kai ginetai update to joboffer opos kai pano
-        jobOfferInDb.setStatus(jobOffer.getStatus());
-        jobOfferInDb.setJobOfferSkillList(jobOffer.getJobOfferSkillList());
+        // jobOfferInDb.setStatus(jobOfferDto.getStatus());
+        jobOfferInDb.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
 
         return jobOfferRepository.save(jobOfferInDb);
 //        if (jobOfferInDb.getStatus() == Status.INACTIVE) {
@@ -86,7 +93,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     /* epistrfei lista me ta job offers vasi ton kritirion pou dinei */
     @Override
     public List<JobOffer> findJobOffersByCriteria
-    (String positionTitle, Region region, Date date, Skill skill) {
+    (String positionTitle, Region region, LocalDate date, Skill skill) {
         return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date, skill);
     }
 
@@ -100,10 +107,17 @@ public class JobOfferServiceImpl implements JobOfferService {
     }
 
 
-    @Override
-    public void addJobOfferSkills(List<JobOffer> jobOffers){
-        for(JobOffer jobOffer: jobOffers){
-            jobOfferSkillRepository.saveAll(jobOffer.getJobOfferSkillList());
-        }
+    public boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive {
+        JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new JobOfferNotFoundException("Cannot find jobOffer with id:" + jobOfferIndex));
+        JobOffer jobOffer;
+        if (jobOfferInDb.getStatus().equals(Status.INACTIVE))
+            throw new JobOfferIsInactive("JobOffer with id:" + jobOfferIndex + " is already inactive.");
+        else jobOfferInDb.setStatus(Status.ACTIVE);
+        jobOffer = jobOfferInDb;
+        jobOffer.setStatus(Status.INACTIVE);
+        jobOfferRepository.save(jobOffer);
+        return true;
     }
+
+
 }
