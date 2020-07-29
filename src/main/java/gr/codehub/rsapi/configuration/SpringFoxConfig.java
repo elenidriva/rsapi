@@ -1,6 +1,4 @@
 package gr.codehub.rsapi.configuration;
-
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -13,7 +11,6 @@ We can see the endpoints through it crm-controller > addCustomer > POST > "john"
 It's a client that is created on its own. It embeds an interface automatically, so we do not need to play with postman
 http://localhost:8080/swagger-ui.html
  */
-
 @Configuration
 @EnableSwagger2
 public class SpringFoxConfig {
