@@ -74,7 +74,6 @@ public class SkillServiceImpl implements SkillService {
             }
         }
     }
-
     @Override
     public void addJobOfferSkillsFromReader(List<JobOffer> jobOffers) {
         for(JobOffer jobOffer: jobOffers){
@@ -91,4 +90,6 @@ public class SkillServiceImpl implements SkillService {
             }
         }
     }
+
+
 }
