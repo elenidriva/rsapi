@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,12 +19,11 @@ public class ApplicantDto {
     private String firstName;
     private String lastName;
     private String address;
-    private Date applicationDate;
-    private String email;
+    // private LocalDate applicationDate;
     private Region region;
     private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
-    private Status status;
+    //private Status status;
 
     private List<ApplicantSkill> applicantSkillList;
 
