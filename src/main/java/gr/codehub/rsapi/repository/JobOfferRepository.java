@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -23,9 +24,9 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Integer> {
     @Query(value = "SELECT c FROM " +
             "JobOffer c WHERE" +
             " (:positionTitle is null or c.positionTitle = :positionTitle) " +
-            "and (:region is null or c.region = :region)" +
-            " and (:date is null or c.date =:date) and (:skill is null or c.skill =:skill)", nativeQuery = true)
+            " and (:region is null or c.region = :region)" +
+            " and (:jobOfferDate is null or c.jobOfferDate =:jobOfferDate) and (:skill is null or c.skill =:skill)", nativeQuery = true)
     List<JobOffer> findJobOffersByCriteria
             (@Param("positionTitle") String positionTitle, @Param("region") Region
-                    region, @Param("date") Date date, @Param("skill") Skill skill);
+                    region, @Param("jobOfferDate") LocalDate jobOfferDate, @Param("skill") Skill skill);
 }
