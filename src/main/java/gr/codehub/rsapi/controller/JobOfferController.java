@@ -22,8 +22,8 @@ import java.util.List;
 @RestController
 public class JobOfferController {
 
-    private JobOfferService jobOfferService;
-    private SkillService skillService;
+    private final JobOfferService jobOfferService;
+    private final SkillService skillService;
 
     @Autowired
     public JobOfferController(JobOfferService jobOfferService, SkillService skillService) {

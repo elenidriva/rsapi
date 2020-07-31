@@ -29,12 +29,8 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<Applicant> applicantList = new ArrayList<>();
         try {
-            //create a workbook instance to hold reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(data);
-            //Getting third sheet from workbook
             XSSFSheet sheet = workbook.getSheetAt(0);
-
-            //iterate through each row
             Iterator<Row> rowIterator = sheet.iterator();
             boolean firstTime = true;
             while (rowIterator.hasNext()) {
@@ -48,10 +44,7 @@ public class ExcelApplicantReader implements Reader<Applicant> {
                 List<String> cellValues = new ArrayList<>();
                 Applicant applicant = new Applicant();
                 applicant.setApplicantSkillList(new ArrayList<>());
-//                List<ApplicantSkill> applicantSkills = new ArrayList<>();
-//                ApplicantAndSkillsDto applicantAndSkillsDto = new ApplicantAndSkillsDto();
-//                applicantAndSkillsDto.setApplicant(applicant);
-//                applicantAndSkillsDto.setApplicantSkillList(applicantSkills);
+
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
                     cellValues.add(cell.getStringCellValue());
@@ -62,7 +55,7 @@ public class ExcelApplicantReader implements Reader<Applicant> {
                         applicantSkill.setSkill(skill);
                         applicantSkill.setApplicant(applicant);
                         applicant.getApplicantSkillList().add(applicantSkill);
-                        //applicantSkills.add(applicantSkill);
+
                     }
                 }
                 extractApplicant(applicant, cellValues);

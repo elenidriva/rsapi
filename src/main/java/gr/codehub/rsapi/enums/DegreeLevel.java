@@ -8,8 +8,8 @@ public enum DegreeLevel {
     PHD(4, "Phd");
 
 
-    private int value;
-    private String  level;
+    private final int value;
+    private final String level;
 
     DegreeLevel(int value, String level) {
         this.value = value;

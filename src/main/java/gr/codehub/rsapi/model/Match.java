@@ -1,5 +1,6 @@
 package gr.codehub.rsapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.codehub.rsapi.enums.MatchStatus;
 import gr.codehub.rsapi.enums.MatchType;
 import gr.codehub.rsapi.enums.Status;
@@ -22,6 +23,7 @@ public class Match {
     private int id;
 
     private LocalDate matchDate;
+    @JsonIgnore
     private MatchType matchType;
     private MatchStatus matchStatus;
     private Status status;

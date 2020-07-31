@@ -22,18 +22,18 @@ public class Applicant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    // Primitive types for Sql
-    private String firstName; //*
 
-    // @Column(name = "lastName", nullable = false, unique = false) // name -> how it's called in the base. nullable (default -> true)
-    private String lastName; //*
-    private String address;// *
+    private String firstName;
+
+
+    private String lastName;
+    private String address;
 
     private LocalDate applicationDate;
 
-    private Region region; //*
-    private DegreeLevel degreeLevel; //*
-    private ExperienceLevel experienceLevel; //*
+    private Region region;
+    private DegreeLevel degreeLevel;
+    private ExperienceLevel experienceLevel;
     private Status status;
 
     @OneToMany(mappedBy = "applicant")

@@ -34,26 +34,14 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     @Query(nativeQuery = true, value = "execute FullMatcher")
     List<FullMatchDto> findFullMatches();
 
-    @Query(value = "SELECT * from Match WHERE matchStatus=0 ORDER BY matchDate DESC", nativeQuery = true)
+    @Query(value = " SELECT * from Match WHERE matchStatus=0 ORDER BY matchDate DESC ", nativeQuery = true)
     List<Match> getFinalisedfMatchesOrderedByDate();
 
-    @Query(value = "SELECT * from Match WHERE matchStatus=0 AND (:startDate is null or :startDate <= matchDate) AND (:endDate is null or :endDate >= matchDate) ", nativeQuery = true)
+    @Query(value = " SELECT * from Match  WHERE (matchDate >= :startDate AND matchDate <= :endDate) AND matchStatus=0 ", nativeQuery = true)
     List<Match> getFinalisedfMatchesWithDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 
-//
-//
-//    @Query(value = "SELECT c FROM Applicant c WHERE(:firstName is null or c.firstName = :firstName) and (:lastName is null or c.lastName = :lastName) and (:region is null or c.region = :region) and (:applicationDate is null or c.applicationDate =:applicationDate) and (:skill is null or c.skill =:skill)", nativeQuery = true)
-//    List<Applicant> findApplicantByCriteria(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("region") Region region, @Param("applicationDate") LocalDate applicationDate, @Param("skill") Skill skill);
-//
-//
-//
-//
-
-
-
-
-    @Query(value = "   select top(20) sk.title title, count(ask.skill_id) as occurences" +
+    @Query(value = "   select top(20) sk.title title, count(ask.skill_id) as occurences " +
             "  from [RSAPI].[dbo].[ApplicantSkill] ask" +
             "  inner join [RSAPI].[dbo].[Skill] sk" +
             "  On ask.skill_id = sk.id" +
@@ -62,7 +50,7 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     List<OfferedRequestedDto> getMostOfferedSkills();
 
 
-    @Query(value = "select top(20) sk.title title, count(jsk.skill_id) as occurences" +
+    @Query(value = "select top(20) sk.title title, count(jsk.skill_id) as occurences " +
             "  from [RSAPI].[dbo].[JobOfferSkill] jsk" +
             "  inner join [RSAPI].[dbo].[Skill] sk" +
             "  On jsk.skill_id = sk.id" +
@@ -78,5 +66,7 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
             , nativeQuery = true)
     List<ApplicantNotMatchedDto> getNotMatchedSkills();
 
+    @Query(value = " SELECT * from Match WHERE matchStatus=1  ", nativeQuery = true)
+    List<Match> getProposedMatches();
 
 }

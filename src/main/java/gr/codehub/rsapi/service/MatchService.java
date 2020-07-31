@@ -19,7 +19,7 @@ public interface MatchService {
 
     Match deleteMatch(int matchIndex) throws MatchNotFoundException, ApplicantNotFoundException, JobOfferNotFoundException;
 
-    List<Match> viewUnfinalisedMatches();
+    boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException;
 
     List<Match> getMostRecentFinalisedMatches();
 
@@ -28,5 +28,10 @@ public interface MatchService {
     List<FullMatchDto> findFullMatches();
 
     List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate);
+
+    Match insertMatch(int applicantIndex, int jobOfferIndex) throws ApplicantNotFoundException, MatchException, JobOfferNotFoundException;
+
+    List<Match> getProposedMatches();
+
 
 }

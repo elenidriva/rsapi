@@ -9,6 +9,7 @@ import gr.codehub.rsapi.exception.MatchNotFoundException;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -30,9 +31,9 @@ public class MatchController {
         return matchService.deleteMatch(matchId);
     }
 
-    @GetMapping("match")
-    public List<Match> viewUnfinalisedMatches() {
-        return matchService.viewUnfinalisedMatches();
+    @GetMapping("getMostRecentFinalisedMatches")
+    public List<Match> getMostRecentFinalisedMatches() {
+        return matchService.getMostRecentFinalisedMatches();
     }
 
     @PutMapping("match")
@@ -48,29 +49,35 @@ public class MatchController {
     }
 
 
-    @GetMapping("getMostRecentFinalisedMatches")
-    public List<Match> getMostRecentMatches() {
-        return matchService.getMostRecentFinalisedMatches();
-    }
-
-
     @GetMapping("partialMatches")
-   public List<JobOffersApplicantsDto> findPartialMatches(){
+    public List<JobOffersApplicantsDto> findPartialMatches() {
         return matchService.findPartialMatches();
     }
 
     @GetMapping("fullMatch")
-    public List<FullMatchDto> findFullMatches(){
+    public List<FullMatchDto> findFullMatches() {
         return matchService.findFullMatches();
 
     }
 
-
     @GetMapping("reports")
     public List<Match> getFinalisedfMatchesWithDateRange(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate)  {
-        return matchService.getFinalisedfMatchesWithDateRange(startDate,endDate );
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return matchService.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
+
+    @GetMapping("check")
+    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+        return matchService.checkForDuplicate(applicantIndex, jobOfferIndex);
+
+    }
+
+    @GetMapping("proposed")
+    public List<Match> getProposedMatches() throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+        return matchService.getProposedMatches();
+
+    }
+
 
 }
