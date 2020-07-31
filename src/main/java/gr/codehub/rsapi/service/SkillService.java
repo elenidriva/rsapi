@@ -11,9 +11,13 @@ import java.util.List;
 
 public interface SkillService {
     List<Skill> getSkills();
+
     Skill addSkill(Skill skill) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException;
+
     List<Skill> addSkillsFromReader(List<Skill> skills);
+
     void addApplicantSkillsFromReader(List<Applicant> applicants);
+
     void addJobOfferSkillsFromReader(List<JobOffer> jobOffers);
 
 }

@@ -19,14 +19,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
-//TODO Dto
 
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
-    private ApplicantRepository applicantRepository;
-    private ApplicantSkillRepository applicantSkillRepository;
-    private SkillRepository skillRepository;
+    private final ApplicantRepository applicantRepository;
+    private final ApplicantSkillRepository applicantSkillRepository;
+    private final SkillRepository skillRepository;
 
     @Autowired
     public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
@@ -35,7 +34,6 @@ public class ApplicantServiceImpl implements ApplicantService {
         this.skillRepository = skillRepository;
     }
 
-    // constructor
     @Override
     public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
         Applicant applicant = new Applicant();

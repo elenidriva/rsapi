@@ -54,7 +54,7 @@ public class ApplicantController {
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) LocalDate applicationDate,
-            @RequestParam(required = false) Skill skill)  {
+            @RequestParam(required = false) Skill skill) {
         return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate, skill);
     }
 

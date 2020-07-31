@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 public class SkillController {
 
-    private SkillService skillService;
+    private final SkillService skillService;
 
     @Autowired
     public SkillController(SkillService skillService) {

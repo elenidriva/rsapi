@@ -27,9 +27,8 @@ public class ReportController {
     }
 
 
-
     @GetMapping("notMatchedSkills")
-    public  List<ApplicantNotMatchedDto> getNotMatchedSkills(){
+    public List<ApplicantNotMatchedDto> getNotMatchedSkills() {
         return reportService.getNotMatchedSkills();
 
     }

@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class ReportServiceImpl implements ReportService {
 
-    private MatchRepository matchRepository;
+    private final MatchRepository matchRepository;
 
     @Autowired
     public ReportServiceImpl(MatchRepository matchRepository) {

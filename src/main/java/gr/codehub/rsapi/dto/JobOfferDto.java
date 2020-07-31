@@ -17,7 +17,6 @@ public class JobOfferDto {
 
     private String positionTitle;
     private String company;
-    //private LocalDate jobOfferDate;
     private ExperienceLevel experienceLevel;
     private Status status;
     private Region region;

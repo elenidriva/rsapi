@@ -17,12 +17,9 @@ public class ApplicantDto {
     private String firstName;
     private String lastName;
     private String address;
-   // private LocalDate applicationDate;
     private Region region;
     private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
-    //private Status status;
-
     private List<ApplicantSkill> applicantSkillList;
 
 }
