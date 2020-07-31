@@ -20,14 +20,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 //TODO Dto
+
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
     private ApplicantRepository applicantRepository;
     private ApplicantSkillRepository applicantSkillRepository;
     private SkillRepository skillRepository;
+
     @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository,SkillRepository skillRepository) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
         this.applicantRepository = applicantRepository;
         this.applicantSkillRepository = applicantSkillRepository;
         this.skillRepository = skillRepository;
@@ -86,7 +88,6 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicantInDb.setApplicantSkillList(applicantDto.getApplicantSkillList());
         applicantInDb.setRegion(applicantDto.getRegion());
 
-
         applicantRepository.save(applicantInDb);
 
         return applicantInDb;
@@ -110,8 +111,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         return true;
     }
 
-
-    public boolean insertApplicantSkill( Applicant applicant, Skill skill) {
+    public boolean insertApplicantSkill(Applicant applicant, Skill skill) {
         ApplicantSkill applicantSkill = new ApplicantSkill();
         applicantSkill.setApplicant(applicant);
         Skill skillInDb = skillRepository.findBySkillTitle(skill.getTitle());
@@ -138,11 +138,6 @@ public class ApplicantServiceImpl implements ApplicantService {
     public Applicant addApplicant(Applicant applicant) {
         return applicantRepository.save(applicant);
     }
-
-//
-//                Skill skillInDb = skillRepository.f
-//                findByName(skill).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
-
 
 
 }

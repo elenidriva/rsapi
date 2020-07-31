@@ -1,5 +1,6 @@
 package gr.codehub.rsapi.model;
 
+import gr.codehub.rsapi.enums.MatchStatus;
 import gr.codehub.rsapi.enums.MatchType;
 import gr.codehub.rsapi.enums.Status;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class Match {
 
     private LocalDate matchDate;
     private MatchType matchType;
+    private MatchStatus matchStatus;
     private Status status;
     @ManyToOne
     private Applicant applicant;

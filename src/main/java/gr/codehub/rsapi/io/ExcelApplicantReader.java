@@ -1,9 +1,9 @@
 package gr.codehub.rsapi.io;
 
-import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
+import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -82,12 +83,10 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         applicant.setLastName(cellValues.get(1));
         applicant.setAddress(cellValues.get(2));
         applicant.setRegion(Region.findRegionByLocation(cellValues.get(3)));
-
-        //DegreeLevel degreeLevel;
-        //applicant.setDegreeLevel(cellValues.get(4));
-
-        //ExperienceLevel experienceLevel ;
-        //applicant.setExperienceLevel(cellValues.get(experienceLevel));
+        applicant.setDegreeLevel(DegreeLevel.findDegreeLevel(cellValues.get(4)));
+        applicant.setExperienceLevel(ExperienceLevel.findDExpLevel(cellValues.get(5)));
+        applicant.setStatus(Status.ACTIVE);
+        applicant.setApplicationDate(LocalDate.now());
         return applicant;
     }
 }

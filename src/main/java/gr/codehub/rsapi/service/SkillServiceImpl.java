@@ -6,14 +6,12 @@ import gr.codehub.rsapi.exception.SkillNotFoundException;
 import gr.codehub.rsapi.model.*;
 import gr.codehub.rsapi.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Qualifier("ImplDB")
 public class SkillServiceImpl implements SkillService {
     @Autowired
     private SkillRepository skillRepository;
@@ -23,11 +21,6 @@ public class SkillServiceImpl implements SkillService {
         return skillRepository.findAll();
     }
 
-    /**
-     * addSkill
-     * check if skill exist
-     * check if skill is null
-     */
 
     @Override
     public Skill addSkill(Skill skill) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
@@ -45,13 +38,11 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public List<Skill> addSkillsFromReader(List<Skill> skills) {
-        for(Skill skill: skills){
+        for (Skill skill : skills) {
             Optional<Skill> skillOptional = skillRepository.findSkillByTitle(skill.getTitle());
-            if(!skillOptional.isPresent()){
+            if (!skillOptional.isPresent()) {
                 skillRepository.save(skill);
-            }
-            //if the skill exists, then get its id
-            else{
+            } else {
                 skill.setId(skillOptional.get().getId());
             }
         }
@@ -60,15 +51,13 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public void addApplicantSkillsFromReader(List<Applicant> applicants) {
-        for(Applicant applicant: applicants){
-            for(ApplicantSkill applicantSkill: applicant.getApplicantSkillList()){
+        for (Applicant applicant : applicants) {
+            for (ApplicantSkill applicantSkill : applicant.getApplicantSkillList()) {
                 Optional<Skill> skillOptional = skillRepository.findSkillByTitle(applicantSkill.getSkill().getTitle());
-                if(!skillOptional.isPresent()){
+                if (!skillOptional.isPresent()) {
                     Skill savedSkill = skillRepository.save(applicantSkill.getSkill());
                     applicantSkill.setSkill(savedSkill);
-                }
-                //else set found skill to current applicant (to get the database id)
-                else{
+                } else {
                     applicantSkill.setSkill(skillOptional.get());
                 }
             }
@@ -77,18 +66,18 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public void addJobOfferSkillsFromReader(List<JobOffer> jobOffers) {
-        for(JobOffer jobOffer: jobOffers){
-            for(JobOfferSkill jobOfferSkill: jobOffer.getJobOfferSkillList()){
+        for (JobOffer jobOffer : jobOffers) {
+            for (JobOfferSkill jobOfferSkill : jobOffer.getJobOfferSkillList()) {
                 Optional<Skill> skillOptional = skillRepository.findSkillByTitle(jobOfferSkill.getSkill().getTitle());
-                if(!skillOptional.isPresent()){
+                if (!skillOptional.isPresent()) {
                     Skill savedSkill = skillRepository.save(jobOfferSkill.getSkill());
                     jobOfferSkill.setSkill(savedSkill);
-                }
-                //else set found skill to current applicant (to get the database id)
-                else{
+                } else {
                     jobOfferSkill.setSkill(skillOptional.get());
                 }
             }
         }
     }
+
+
 }

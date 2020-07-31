@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface SkillRepository extends JpaRepository<Skill, Integer> {
 
     @Query(value = " SELECT * FROM Skill where (title = :title)", nativeQuery = true)
-    public Skill findBySkillTitle(@Param("title") String title);
+    Skill findBySkillTitle(@Param("title") String title);
 
     Optional<Skill> findSkillByTitle(String title);
+
 }

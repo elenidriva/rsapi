@@ -14,11 +14,7 @@ import java.util.List;
 
 public interface JobOfferService {
 
-    /**
-     * search by date, skill, name, region
-     **/
-
-    List<JobOffer> getJobOffers(); /*otan thelo id thelo ena joboffer allios thelo polla */
+    List<JobOffer> getJobOffers();
 
     JobOffer getJobOffer(int jobOfferId);
 
@@ -29,6 +25,10 @@ public interface JobOfferService {
     List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date, Skill skill);
 
     boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive;
+
+    void addJobOfferSkills(List<JobOffer> jobOffers);
+
+    List<JobOffer> addJobOffers(List<JobOffer> jobOffers);
 
 }
 

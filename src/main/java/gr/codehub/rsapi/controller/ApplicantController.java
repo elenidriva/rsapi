@@ -10,6 +10,7 @@ import gr.codehub.rsapi.io.ExcelApplicantReader;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
+import gr.codehub.rsapi.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,8 @@ public class ApplicantController {
 
     @Autowired
     private ApplicantService applicantService;
+    @Autowired
+    private SkillService skillService;
 
 
     @PostMapping("applicant")
@@ -40,15 +43,11 @@ public class ApplicantController {
         return applicantService.getApplicant(id);
     }
 
-    @GetMapping("applicant") // end point, verb, parameters if they exist
+    @GetMapping("applicant")
     public List<Applicant> getApplicants() {
         return applicantService.getApplicants();
     }
 
-    //    @PutMapping("applicant/{id}/status")
-//    public Applicant updateApplicant(@RequestBody Applicant applicant, @PathVariable int id) throws ApplicantNotFoundException {
-//        return applicantService.updateApplicant(applicant, id);
-//    }
     @GetMapping("applicant/criteria")
     public List<Applicant> findApplicantsByCriteria(
             @RequestParam(required = false) String firstName,

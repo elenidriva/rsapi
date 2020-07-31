@@ -3,17 +3,14 @@ package gr.codehub.rsapi.controller;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
-import gr.codehub.rsapi.io.ExcelApplicantReader;
 import gr.codehub.rsapi.io.ExcelSkillReader;
-import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
+import gr.codehub.rsapi.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import gr.codehub.rsapi.service.SkillService;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -23,9 +20,8 @@ public class SkillController {
 
     private SkillService skillService;
 
-    //Constructor
     @Autowired
-    public SkillController( SkillService skillService) {
+    public SkillController(SkillService skillService) {
         this.skillService = skillService;
     }
 

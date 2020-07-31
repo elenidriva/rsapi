@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;

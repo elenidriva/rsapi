@@ -1,8 +1,8 @@
 package gr.codehub.rsapi.enums;
 
 public enum DegreeLevel {
-    HIGH_SCHOOL_DIPLOMA(0, "High School Diploma"),
-    ASSOCIATE(1, "Associate"),
+    COMPUTER_GRAPHICS(0, "Computer Graphics"),
+    COMPUTER_SCIENCE(1, "Computer Science"),
     BACHELOR(2, "Bachelor"),
     MASTER(3, "Master"),
     PHD(4, "Phd");

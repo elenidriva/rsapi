@@ -1,12 +1,12 @@
 package gr.codehub.rsapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class JobOffer {
     private Region region;
 
     @OneToMany(mappedBy = "jobOffer")
-    @ToString.Exclude
+    @JsonIgnore
     private List<JobOfferSkill> jobOfferSkillList;
 
 
