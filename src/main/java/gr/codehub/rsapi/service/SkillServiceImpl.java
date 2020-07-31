@@ -24,7 +24,6 @@ public class SkillServiceImpl implements SkillService {
         return skillRepository.findAll();
     }
 
-
     @Override
     public Skill addSkill(SkillDto skillDto) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
         Skill skill = new Skill();
@@ -39,6 +38,7 @@ public class SkillServiceImpl implements SkillService {
         skill.setTitle(skillFromDb.getTitle());
         return skillRepository.save(skill);
     }
+
 
     @Override
     public List<Skill> splitSkill(SkillDto skillDto) throws SkillNotFoundException, SkillCreationException, SkillIsAlreadyExistException {
