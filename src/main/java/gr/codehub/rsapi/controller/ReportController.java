@@ -2,16 +2,16 @@ package gr.codehub.rsapi.controller;
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.OfferedRequestedDto;
 import gr.codehub.rsapi.service.ReportService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class ReportController {
 
-    @Autowired
     private ReportService reportService;
 
 

@@ -1,7 +1,6 @@
 package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;

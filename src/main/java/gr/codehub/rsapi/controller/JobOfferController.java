@@ -8,13 +8,14 @@ import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.JobOfferService;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class JobOfferController {
 
@@ -22,11 +23,6 @@ public class JobOfferController {
     private final SkillService skillService;
 
 
-    @Autowired
-    public JobOfferController(JobOfferService jobOfferService, SkillService skillService) {
-        this.jobOfferService = jobOfferService;
-        this.skillService = skillService;
-    }
 
     /**
      * Endpoint for adding a job offer

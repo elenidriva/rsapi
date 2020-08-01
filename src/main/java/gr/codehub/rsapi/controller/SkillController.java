@@ -7,21 +7,17 @@ import gr.codehub.rsapi.exception.SkillNotFoundException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class SkillController {
 
     private final SkillService skillService;
 
-    @Autowired
-    public SkillController(SkillService skillService) {
-        this.skillService = skillService;
-    }
 
     @GetMapping(value = "skill")
     public List<Skill> getSkills() {

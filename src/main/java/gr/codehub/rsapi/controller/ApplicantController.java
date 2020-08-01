@@ -11,19 +11,19 @@ import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class ApplicantController {
 
-    @Autowired
+
     private ApplicantService applicantService;
-    @Autowired
     private SkillService skillService;
 
 

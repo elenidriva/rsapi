@@ -53,7 +53,6 @@ public class ExcelJobOfferReader implements Reader<JobOffer> {
                         jobOfferSkill.setSkill(skill);
                         jobOfferSkill.setJobOffer(jobOffer);
                         jobOffer.getJobOfferSkillList().add(jobOfferSkill);
-                        //applicantSkills.add(applicantSkill);
                     }
                 }
                 extractJobOffer(jobOffer, cellValues);

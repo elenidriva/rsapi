@@ -8,22 +8,18 @@ import gr.codehub.rsapi.exception.MatchException;
 import gr.codehub.rsapi.exception.MatchNotFoundException;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class MatchController {
 
     MatchService matchService;
-
-    @Autowired
-    public MatchController(MatchService matchService) {
-        this.matchService = matchService;
-    }
 
 
     @DeleteMapping("match/{id}")

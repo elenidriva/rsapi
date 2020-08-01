@@ -24,8 +24,6 @@ public class Applicant {
     private int id;
 
     private String firstName;
-
-
     private String lastName;
     private String address;
 
@@ -35,6 +33,7 @@ public class Applicant {
     private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
     private Status status;
+
 
     @OneToMany(mappedBy = "applicant")
     @ToString.Exclude

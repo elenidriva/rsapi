@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,7 +40,6 @@ public class ExcelSkillReader implements Reader<Skill> {
                 Iterator<Cell> cellIterator = row.cellIterator();
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
-                    //check cell type and format accordingly
                     String skillName = cell.getStringCellValue();
                     Skill s = new Skill();
                     s.setTitle(skillName);
