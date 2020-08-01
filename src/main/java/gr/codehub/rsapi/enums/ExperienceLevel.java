@@ -7,10 +7,10 @@ public enum ExperienceLevel {
     SENIOR(3, "Senior");
 
 
-    private int value;
-    private String expLevel;
+    private final int value;
+    private final String expLevel;
 
-    ExperienceLevel(int value, String expLevel ) {
+    ExperienceLevel(int value, String expLevel) {
         this.value = value;
         this.expLevel = expLevel;
     }
