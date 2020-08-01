@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.controller;
 
-
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.JobOfferCreationException;
@@ -22,43 +21,32 @@ import java.util.List;
 @RestController
 public class JobOfferController {
 
-
-    /* gia na sundeso to restcontroller (ayta pou fainontai sto xristi--endpoints)
-    me ta services   */
-
-    /* dimiourgo ena pedio ston controller gia na borei na to xrisimopoisei */
-    /* pairno ena joboffer kai to vazo sti vasi */
-    private JobOfferService jobOfferService;
-    private SkillService skillService;
+    private final JobOfferService jobOfferService;
+    private final SkillService skillService;
 
     @Autowired
-    public JobOfferController(JobOfferService jobOfferService,SkillService skillService) {
+    public JobOfferController(JobOfferService jobOfferService, SkillService skillService) {
         this.jobOfferService = jobOfferService;
         this.skillService = skillService;
     }
 
-    // prosthetei ena joboffer
-    @PostMapping("jobOffer") //to string ti patame gia na ginei i entoli
+    @PostMapping("jobOffer")
     public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws JobOfferCreationException {
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
-    /* uloipoisi tou na paro to joboffer vasi enos id */
     @GetMapping("jobOffer/{id}")
     public JobOffer getJobOffer(@PathVariable int id) throws JobOfferNotFoundException {
         return jobOfferService.getJobOffer(id);
     }
 
-    /* pairnei o recruiter to jooffer vasi id kai tou allazei,
-    oi allages pou borei na kanei einai aytes pou anaferontai sto joboffer(columns) */
     @PutMapping("jobOffer/{id}")
-    //to pathvariable simainei oti parino apo to xristi kati
     public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
             throws JobOfferUpdateException, JobOfferNotFoundException {
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
-    @GetMapping("jobOffer") // end point, verb, parameters if they exist
+    @GetMapping("jobOffer")
     public List<JobOffer> getJobOffers() {
         return jobOfferService.getJobOffers();
     }
@@ -88,9 +76,6 @@ public class JobOfferController {
         System.out.println(savedJobOffers);
         return savedJobOffers;
     }
-
-
-
 
 }
 
