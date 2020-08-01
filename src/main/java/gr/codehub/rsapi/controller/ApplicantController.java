@@ -43,22 +43,18 @@ public class ApplicantController {
         return applicantService.getApplicant(id);
     }
 
-    @GetMapping("applicant") // end point, verb, parameters if they exist
+    @GetMapping("applicant")
     public List<Applicant> getApplicants() {
         return applicantService.getApplicants();
     }
 
-    //    @PutMapping("applicant/{id}/status")
-//    public Applicant updateApplicant(@RequestBody Applicant applicant, @PathVariable int id) throws ApplicantNotFoundException {
-//        return applicantService.updateApplicant(applicant, id);
-//    }
     @GetMapping("applicant/criteria")
     public List<Applicant> findApplicantsByCriteria(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) LocalDate applicationDate,
-            @RequestParam(required = false) Skill skill)  {
+            @RequestParam(required = false) Skill skill) {
         return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate, skill);
     }
 
@@ -85,5 +81,3 @@ public class ApplicantController {
     }
 
 }
-
-
