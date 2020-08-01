@@ -34,6 +34,13 @@ public class ApplicantServiceImpl implements ApplicantService {
         this.skillRepository = skillRepository;
     }
 
+    /**
+     * This method takes the data from dto and passes the data needed to create the applicant and saves it in the base
+     *
+     * @param applicantDto gets from the user a dto object
+     * @return applicant with id and saves to the data base
+     * @throws ApplicantCreationException the user tried to create an applicant without the required fields
+     */
     @Override
     public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
         Applicant applicant = new Applicant();
@@ -53,6 +60,15 @@ public class ApplicantServiceImpl implements ApplicantService {
         return applicant;
     }
 
+    /**
+     * This method takes an id from the user and searches the repository if it exists
+     * If the status is inactive we tell him it's Inactive and he does it active
+     *
+     * @param applicantIndex the applicant id given by the user
+     * @return to successfully change the status to inactive returns true
+     * @throws ApplicantNotFoundException the user tried to find an applicant with id that does not exist
+     * @throws ApplicantIsInactive        the user tried to do inactive an applicant that is already inactive
+     */
     @Override
     public boolean setApplicantInactive(int applicantIndex) throws ApplicantNotFoundException, ApplicantIsInactive {
         Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
@@ -66,11 +82,28 @@ public class ApplicantServiceImpl implements ApplicantService {
         return true;
     }
 
+
+    /**
+     * This method searches the base if there is an applicant with this id and if there is it returns it
+     *
+     * @param applicantIndex the id of applicant given by the user
+     * @return the appliacnt based on the id given by the user
+     * @throws ApplicantNotFoundException The user tried to find an applicant that does not exist in the data base
+     */
     @Override
     public Applicant getApplicant(int applicantIndex) throws ApplicantNotFoundException {
         return applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant in the DB."));
     }
 
+    /**
+     * Takes the data from dto and passes the data needed to make update the applicant
+     *
+     * @param applicantDto   gets from the user a dto object
+     * @param applicantIndex takes the ID of an applicant and finds if exists
+     * @return the applicant updated and saves it to the base
+     * @throws ApplicantNotFoundException The user tried to update an applicant that does not exist
+     * @throws ApplicantUpdateException   The user tried to update the applicant but the applicant is inactive
+     */
     @Override
     public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException, ApplicantUpdateException {
 
@@ -96,6 +129,17 @@ public class ApplicantServiceImpl implements ApplicantService {
         return applicantRepository.findAll();
     }
 
+    /**
+     * This method finds the applicants from the applicant
+     * repository based on the criteria given by the user
+     *
+     * @param firstName the first name of the applicant
+     * @param lastName  the last name of the applicant
+     * @param region    the region of the applicant
+     * @param date      the date that appllicant made the application
+     * @param skill     the applicant`s skills
+     * @return a list of applicants based on the criteria that become from the user
+     */
     @Override
     public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date, Skill skill) {
 
@@ -103,12 +147,25 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     }
 
+    /**
+     * This method searches the base if there is an applicant with this id and if there is it delete it
+     *
+     * @param applicantIndex takes the ID of an applicant and finds if exists
+     * @return true if applicant it was actually deleted
+     * @throws ApplicantNotFoundException the user tried to delete an applicant with id that does not exist in data base
+     */
     @Override
     public boolean deleteApplicant(int applicantIndex) throws ApplicantNotFoundException {
         applicantRepository.deleteById(applicantIndex);
         return true;
     }
 
+    /**
+     *
+     * @param applicant
+     * @param skill
+     * @return
+     */
     public boolean insertApplicantSkill(Applicant applicant, Skill skill) {
         ApplicantSkill applicantSkill = new ApplicantSkill();
         applicantSkill.setApplicant(applicant);
@@ -120,6 +177,12 @@ public class ApplicantServiceImpl implements ApplicantService {
         return false;
     }
 
+    /**
+     * ayti i methodos vazei se kathe applicant ola ta applicant skills
+     * kai sozei stin vasi
+     *
+     * @param applicants oso uparxoyn applicants sunexise na sozeis ola ta applicant skills tous
+     */
     @Override
     public void addApplicantSkills(List<Applicant> applicants) {
         for (Applicant applicant : applicants) {

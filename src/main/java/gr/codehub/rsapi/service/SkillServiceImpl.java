@@ -24,6 +24,16 @@ public class SkillServiceImpl implements SkillService {
         return skillRepository.findAll();
     }
 
+    /**
+     * This method takes the skill from the repository and passes the data needed
+     * to create the applicant and saves it in the base
+     *
+     * @param skill
+     * @return
+     * @throws SkillCreationException       the user tried to create a skill without the required fields
+     * @throws SkillNotFoundException       the user tried to find an applicant with id that does not exist
+     * @throws SkillIsAlreadyExistException the user tried to add a skill tha already exist
+     */
     @Override
     public Skill addSkill(SkillDto skillDto) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException {
         Skill skill = new Skill();

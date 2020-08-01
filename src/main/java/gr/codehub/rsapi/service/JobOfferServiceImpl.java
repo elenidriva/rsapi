@@ -26,6 +26,13 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Autowired
     private JobOfferSkillRepository jobOfferSkillRepository;
 
+    /**
+     * Takes the data from dto and passes the data needed to create the job offer and saves it in the base
+     *
+     * @param jobOfferDto gets from the user a dto object
+     * @return job offer with id and saves to the data base
+     * @throws JobOfferCreationException the user tried to create a job offer without the required fields
+     */
     @Override
     public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException {
         JobOffer jobOffer = new JobOffer();
@@ -46,6 +53,15 @@ public class JobOfferServiceImpl implements JobOfferService {
     }
 
 
+    /**
+     * Takes the data from dto and passes the data needed to make update the job offer
+     *
+     * @param jobOfferDto gets from the user a dto object
+     * @param jobOfferId  takes the ID of a job offer and finds if exists
+     * @return the job offer updated and saves it to the base
+     * @throws JobOfferNotFoundException The user tried to update a Job offer that does not exist
+     * @throws JobOfferUpdateException   The user tried to update the job offer but the job offer is inactive
+     */
     @Override
     public JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException {
         JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferId)
@@ -69,12 +85,29 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.findAll();
     }
 
+    /**
+     * This method finds the job offers from the job offer
+     * repository based on the criteria given by the user
+     *
+     * @param positionTitle the title of the job offer position
+     * @param region        the region for the job offer
+     * @param date          the date that job offer was made
+     * @param skill         which skills the job offer asks for
+     * @return a list of job offers based on the criteria that become from the user
+     */
     @Override
     public List<JobOffer> findJobOffersByCriteria
             (String positionTitle, Region region, LocalDate date, Skill skill) {
         return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date, skill);
     }
 
+    /**
+     * This method searches the base if there is a job offer with this id and if there is it returns it
+     *
+     * @param jobOfferIndex the id of job offer given by the user
+     * @return the job offer based on the id given by the user
+     * @throws JobOfferNotFoundException The user tried to find a job offer that does not exist in the data base
+     */
     @Override
     public JobOffer getJobOffer(int jobOfferId) {
         Optional<JobOffer> jobOfferInDbOptional = jobOfferRepository.findById(jobOfferId);
@@ -83,6 +116,15 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferInDb;
     }
 
+    /**
+     * This method takes an id from the user and searches the repository if it exists
+     * If the status is inactive we tell him it's Inactive and he does it active
+     *
+     * @param jobOfferIndex the job offer id given by the user
+     * @return to successfully change the status to inactive returns true
+     * @throws JobOfferNotFoundException the user tried to find a job offer with id that does not exist
+     * @throws JobOfferIsInactive        the user tried to do inactive a job offer that is already inactive
+     */
     public boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive {
         JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new JobOfferNotFoundException("Cannot find jobOffer with id:" + jobOfferIndex));
         JobOffer jobOffer;
