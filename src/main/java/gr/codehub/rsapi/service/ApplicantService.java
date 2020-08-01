@@ -30,8 +30,8 @@ public interface ApplicantService {
 
     List<Applicant> addApplicants(List<Applicant> applicants);
 
-    //PERHAPS TO BE MOVED
     void addApplicantSkills(List<Applicant> applicants);
 
     Applicant addApplicant(Applicant applicant);
+
 }

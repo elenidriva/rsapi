@@ -19,21 +19,21 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
-//TODO Dto
+
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
-    private ApplicantRepository applicantRepository;
-    private ApplicantSkillRepository applicantSkillRepository;
-    private SkillRepository skillRepository;
+    private final ApplicantRepository applicantRepository;
+    private final ApplicantSkillRepository applicantSkillRepository;
+    private final SkillRepository skillRepository;
+
     @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository,SkillRepository skillRepository) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
         this.applicantRepository = applicantRepository;
         this.applicantSkillRepository = applicantSkillRepository;
         this.skillRepository = skillRepository;
     }
 
-    // constructor
     @Override
     public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
         Applicant applicant = new Applicant();
@@ -86,7 +86,6 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicantInDb.setApplicantSkillList(applicantDto.getApplicantSkillList());
         applicantInDb.setRegion(applicantDto.getRegion());
 
-
         applicantRepository.save(applicantInDb);
 
         return applicantInDb;
@@ -110,8 +109,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         return true;
     }
 
-
-    public boolean insertApplicantSkill( Applicant applicant, Skill skill) {
+    public boolean insertApplicantSkill(Applicant applicant, Skill skill) {
         ApplicantSkill applicantSkill = new ApplicantSkill();
         applicantSkill.setApplicant(applicant);
         Skill skillInDb = skillRepository.findBySkillTitle(skill.getTitle());
@@ -123,17 +121,15 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public List<Applicant> addApplicants(List<Applicant> applicants) {
-        return applicantRepository.saveAll(applicants);
-    }
-
-    //PERHAPS TO BE MOVED
-
-    @Override
-    public void addApplicantSkills(List<Applicant> applicants){
-        for(Applicant applicant: applicants){
+    public void addApplicantSkills(List<Applicant> applicants) {
+        for (Applicant applicant : applicants) {
             applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
         }
+    }
+
+    @Override
+    public List<Applicant> addApplicants(List<Applicant> applicants) {
+        return applicantRepository.saveAll(applicants);
     }
 
     @Override
@@ -141,10 +137,6 @@ public class ApplicantServiceImpl implements ApplicantService {
         return applicantRepository.save(applicant);
     }
 
-//
-//                Skill skillInDb = skillRepository.f
-//                findByName(skill).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
-
-
 
 }
+

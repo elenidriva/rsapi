@@ -1,7 +1,8 @@
 package gr.codehub.rsapi.service;
 
+import gr.codehub.rsapi.dto.FullMatchDto;
+import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
 import gr.codehub.rsapi.enums.MatchStatus;
-import gr.codehub.rsapi.enums.MatchType;
 import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
@@ -15,18 +16,17 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MatchServiceImpl implements MatchService {
 
-    private MatchRepository matchRepository;
-    private ApplicantRepository applicantRepository;
-    private ApplicantSkillRepository applicantSkillRepository;
-    private JobOfferRepository jobOfferRepository;
-    private JobOfferService jobOfferService;
-    private ApplicantService applicantService;
-    private JobOfferSkillRepository jobOfferSkillRepository;
+    private final MatchRepository matchRepository;
+    private final ApplicantRepository applicantRepository;
+    private final ApplicantSkillRepository applicantSkillRepository;
+    private final JobOfferRepository jobOfferRepository;
+    private final JobOfferService jobOfferService;
+    private final ApplicantService applicantService;
+    private final JobOfferSkillRepository jobOfferSkillRepository;
 
     public MatchServiceImpl(MatchRepository matchRepository,
                             ApplicantRepository applicantRepository,
@@ -45,8 +45,30 @@ public class MatchServiceImpl implements MatchService {
         this.jobOfferSkillRepository = jobOfferSkillRepository;
     }
 
+
     @Override
     public Match createManualMatch(int applicantIndex, int jobOfferIndex) throws ApplicantNotFoundException, MatchException, JobOfferNotFoundException {
+        if (checkForDuplicate(applicantIndex, jobOfferIndex)) {
+            throw new MatchException("This match is already exist");
+        } else {
+            Match match = insertMatch(applicantIndex, jobOfferIndex);
+            return match;
+        }
+
+    }
+
+    @Override
+    public Match finaliseMatch(int matchIndex) throws MatchNotFoundException {
+        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new MatchNotFoundException("There is no Match with id: " + matchIndex));
+        match.setMatchStatus(MatchStatus.FINALISED);
+        match.setMatchDate(LocalDate.now());
+        return matchRepository.save(match);
+    }
+
+
+    @Override
+    public Match insertMatch(int applicantIndex, int jobOfferIndex) throws ApplicantNotFoundException, MatchException, JobOfferNotFoundException {
+
         Match match = new Match();
 
         Applicant applicant = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
@@ -60,31 +82,19 @@ public class MatchServiceImpl implements MatchService {
         match.setApplicant(applicant);
         match.setJobOffer(jobOffer);
         match.setMatchDate(LocalDate.now());
-        match.setMatchType(MatchType.MANUALLY);
-        match.setMatchStatus(MatchStatus.UNFINALISED); // We need to do finalisation manually in another method
+        match.setMatchStatus(MatchStatus.UNFINALISED);
+        match.setStatus(Status.ACTIVE);
 
         matchRepository.save(match);
         return match;
 
-    }
-
-
-    @Override
-    public Match finaliseMatch(int matchIndex) throws MatchNotFoundException {
-        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new MatchNotFoundException("There is no Match with id: " + matchIndex));
-        match.setMatchStatus(MatchStatus.FINALISED);
-        //keep date for Reporter > 4.
-        match.setMatchDate(LocalDate.now());
-        matchRepository.save(match);
-
-        return match;
     }
 
     @Override
     public Match deleteMatch(int matchIndex) throws MatchNotFoundException, ApplicantNotFoundException, JobOfferNotFoundException {
         Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new MatchNotFoundException("There is no Match with id: " + matchIndex));
         match.setMatchStatus(MatchStatus.DELETED);
-        // When we delete a Match, we want to set the Applicant and JobOffer free.
+
         Applicant applicant = applicantRepository.findById(match.getApplicant().getId()).orElseThrow(() -> new ApplicantNotFoundException("Cannot find matched applicant with id:" + match.getApplicant().getId()));
         JobOffer jobOffer = jobOfferRepository.findById(match.getJobOffer().getId()).orElseThrow(() -> new JobOfferNotFoundException("Cannot find JobOffer with id:" + match.getJobOffer().getId()));
 
@@ -98,58 +108,43 @@ public class MatchServiceImpl implements MatchService {
         return match;
     }
 
-
     @Override
-    public List<Match> viewUnfinalisedMatches() {
-        return matchRepository
-                .findAll()
-                .stream()
-                .filter(um -> um.getMatchStatus().equals(MatchStatus.UNFINALISED))
-                .collect(Collectors.toList());
-
+    public boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+        return matchRepository.findAll().stream().anyMatch(o -> o.getApplicant().getId() == applicantIndex && o.getJobOffer().getId() == jobOfferIndex);
     }
 
-    @Override
-    public void autoMatchJobOfferToApplicant(int applicantIndex, int jobOfferIndex) throws JobOfferNotFoundException, ApplicantNotFoundException {
-        Match match = new Match();
-
-        Applicant applicant = applicantRepository.findById(match.getApplicant().getId()).orElseThrow(() -> new ApplicantNotFoundException("Cannot find matched applicant with id:" + match.getApplicant().getId()));
-        JobOffer jobOffer = jobOfferRepository.findById(match.getJobOffer().getId()).orElseThrow(() -> new JobOfferNotFoundException("Cannot find JobOffer with id:" + match.getJobOffer().getId()));
-
-        match.setApplicant(applicant);
-        match.setJobOffer(jobOffer);
-        match.setMatchDate(LocalDate.now());
-        match.setMatchType(MatchType.AUTOMATICALLY);
-        match.setMatchStatus(MatchStatus.UNFINALISED); // We need to do finalisation manually in another method
-
-        applicantRepository.save(applicant);
-        jobOfferRepository.save(jobOffer);
-
-    }
 
     @Override
-    public List<JobOffersApplicantsDto> findSkillMatches() {
+    public List<JobOffersApplicantsDto> findPartialMatches() {
         return matchRepository.findSkillMatches();
     }
 
 
-    public List<Match> createAutomaticMatches() {
-        List<Integer> intListOfActiveJobOffers = jobOfferRepository
-                .findAll()
-                .stream()
-                .filter(um -> um.getStatus().equals(Status.ACTIVE))
-                .map(JobOffer::getId)
-                .collect(Collectors.toList());
+    public List<FullMatchDto> findFullMatches() {
+        List<FullMatchDto> list = matchRepository.findFullMatches();
+        list.forEach(record -> {
+            try {
+                createManualMatch(record.getApp(), record.getJob());
+            } catch (ApplicantNotFoundException | MatchException | JobOfferNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        return matchRepository.findFullMatches();
 
-        for (int jobOfferId : intListOfActiveJobOffers) {
-
-        }
-        return null;
     }
 
+    @Override
     public List<Match> getMostRecentFinalisedMatches() {
         return matchRepository.getFinalisedfMatchesOrderedByDate();
     }
 
+    @Override
+    public List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) {
+        return matchRepository.getFinalisedfMatchesWithDateRange(startDate, endDate);
+    }
 
+    @Override
+    public List<Match> getProposedMatches() {
+        return matchRepository.getProposedMatches();
+    }
 }
