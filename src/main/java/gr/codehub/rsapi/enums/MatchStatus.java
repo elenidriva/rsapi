@@ -2,10 +2,10 @@ package gr.codehub.rsapi.enums;
 
 public enum MatchStatus {
     FINALISED(0),
-    NONFINALISED(1),
+    UNFINALISED(1),
     DELETED(2);
 
-    private int value;
+    private final int value;
 
     MatchStatus(int value) {
         this.value = value;

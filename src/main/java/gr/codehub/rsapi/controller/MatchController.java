@@ -1,5 +1,7 @@
 package gr.codehub.rsapi.controller;
 
+import gr.codehub.rsapi.dto.FullMatchDto;
+import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
 import gr.codehub.rsapi.exception.ApplicantNotFoundException;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
 import gr.codehub.rsapi.exception.MatchException;
@@ -7,8 +9,10 @@ import gr.codehub.rsapi.exception.MatchNotFoundException;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,18 +25,19 @@ public class MatchController {
         this.matchService = matchService;
     }
 
+
     @DeleteMapping("match/{id}")
     public Match deleteMatch(@PathVariable int matchId) throws MatchNotFoundException, ApplicantNotFoundException, JobOfferNotFoundException {
         return matchService.deleteMatch(matchId);
     }
 
-    @GetMapping("match")
-    public List<Match> viewUnfinalisedMatches() {
-        return matchService.viewUnfinalisedMatches();
+    @GetMapping("getMostRecentFinalisedMatches")
+    public List<Match> getMostRecentFinalisedMatches() {
+        return matchService.getMostRecentFinalisedMatches();
     }
 
     @PutMapping("match")
-    public Match finaliseMatch(@PathVariable int matchId) throws MatchNotFoundException {
+    public Match finaliseMatch(@RequestParam int matchId) throws MatchNotFoundException {
         return matchService.finaliseMatch(matchId);
 
     }
@@ -44,16 +49,35 @@ public class MatchController {
     }
 
 
-    @GetMapping("getMostRecentFinalisedMatches")
-    public List<Match> getMostRecentMatches() {
-        return matchService.getMostRecentFinalisedMatches();
+    @GetMapping("partialMatches")
+    public List<JobOffersApplicantsDto> findPartialMatches() {
+        return matchService.findPartialMatches();
     }
 
+    @GetMapping("fullMatch")
+    public List<FullMatchDto> findFullMatches() {
+        return matchService.findFullMatches();
 
-    @PostMapping("createAutomaticMatches")
-    public List<Match> automaticMatch() throws MatchException {
-        return matchService.createAutomaticMatches();
     }
+
+    @GetMapping("reports")
+    public List<Match> getFinalisedfMatchesWithDateRange(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return matchService.getFinalisedfMatchesWithDateRange(startDate, endDate);
+    }
+
+    @GetMapping("check")
+    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+        return matchService.checkForDuplicate(applicantIndex, jobOfferIndex);
+
+    }
+
+    @GetMapping("proposed")
+    public List<Match> getProposedMatches() throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+        return matchService.getProposedMatches();
+
+    }
+
 
 }
-

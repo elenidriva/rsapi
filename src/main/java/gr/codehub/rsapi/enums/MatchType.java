@@ -4,7 +4,7 @@ public enum MatchType {
     AUTOMATICALLY(0),
     MANUALLY(1);
 
-    private int value;
+    private final int value;
 
     MatchType(int value) {
         this.value = value;
