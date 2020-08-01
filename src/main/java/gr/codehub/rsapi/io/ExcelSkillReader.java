@@ -27,12 +27,8 @@ public class ExcelSkillReader implements Reader<Skill> {
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<Skill> skills = new ArrayList<>();
         try {
-            //create a workbook instance to hold reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(data);
-            //Getting third sheet from workbook
             XSSFSheet sheet = workbook.getSheetAt(2);
-
-            //iterate through each row
             Iterator<Row> rowIterator = sheet.iterator();
             boolean firstTime = true;
             while (rowIterator.hasNext()) {

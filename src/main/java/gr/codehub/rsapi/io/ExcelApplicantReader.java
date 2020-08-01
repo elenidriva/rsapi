@@ -1,9 +1,9 @@
 package gr.codehub.rsapi.io;
 
-import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
+import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,12 +29,8 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<Applicant> applicantList = new ArrayList<>();
         try {
-            //create a workbook instance to hold reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(data);
-            //Getting third sheet from workbook
             XSSFSheet sheet = workbook.getSheetAt(0);
-
-            //iterate through each row
             Iterator<Row> rowIterator = sheet.iterator();
             boolean firstTime = true;
             while (rowIterator.hasNext()) {
@@ -47,10 +44,7 @@ public class ExcelApplicantReader implements Reader<Applicant> {
                 List<String> cellValues = new ArrayList<>();
                 Applicant applicant = new Applicant();
                 applicant.setApplicantSkillList(new ArrayList<>());
-//                List<ApplicantSkill> applicantSkills = new ArrayList<>();
-//                ApplicantAndSkillsDto applicantAndSkillsDto = new ApplicantAndSkillsDto();
-//                applicantAndSkillsDto.setApplicant(applicant);
-//                applicantAndSkillsDto.setApplicantSkillList(applicantSkills);
+
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
                     cellValues.add(cell.getStringCellValue());
@@ -61,7 +55,7 @@ public class ExcelApplicantReader implements Reader<Applicant> {
                         applicantSkill.setSkill(skill);
                         applicantSkill.setApplicant(applicant);
                         applicant.getApplicantSkillList().add(applicantSkill);
-                        //applicantSkills.add(applicantSkill);
+
                     }
                 }
                 extractApplicant(applicant, cellValues);
@@ -82,12 +76,10 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         applicant.setLastName(cellValues.get(1));
         applicant.setAddress(cellValues.get(2));
         applicant.setRegion(Region.findRegionByLocation(cellValues.get(3)));
-
-        //DegreeLevel degreeLevel;
-        //applicant.setDegreeLevel(cellValues.get(4));
-
-        //ExperienceLevel experienceLevel ;
-        //applicant.setExperienceLevel(cellValues.get(experienceLevel));
+        applicant.setDegreeLevel(DegreeLevel.findDegreeLevel(cellValues.get(4)));
+        applicant.setExperienceLevel(ExperienceLevel.findDExpLevel(cellValues.get(5)));
+        applicant.setStatus(Status.ACTIVE);
+        applicant.setApplicationDate(LocalDate.now());
         return applicant;
     }
 }
