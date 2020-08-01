@@ -23,6 +23,13 @@ public enum Region {
         this.location = location;
     }
 
+    /**
+     * This method breeds the string by checking whether the region is the same
+     * as the location that is of the string type
+     *
+     * @param location to be able to do the matching with the strings I get from excel
+     * @return returns the string without letting the user enter the region type variable
+     */
     public static Region findRegionByLocation(String location) {
         for (Region region : Region.values()) {
             if (region.location.equals(location))

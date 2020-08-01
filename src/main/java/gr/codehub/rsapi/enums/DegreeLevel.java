@@ -16,6 +16,12 @@ public enum DegreeLevel {
         this.level = level;
     }
 
+    /**
+     * This method takes level, takes the value(int) and sees if it is the same
+     *
+     * @param level to be able to do matching with the strings and values
+     * @return the degree level to match
+     */
     public static DegreeLevel findDegreeLevel(String level) {
         for (DegreeLevel degreeLevel : DegreeLevel.values()) {
             if (degreeLevel.level.equals(level))
