@@ -5,7 +5,6 @@ import gr.codehub.rsapi.exception.JobOfferNotFoundException;
 import gr.codehub.rsapi.exception.MatchException;
 import gr.codehub.rsapi.exception.MatchNotFoundException;
 import gr.codehub.rsapi.model.Match;
-import gr.codehub.rsapi.repository.JobOffersApplicantsDto;
 
 import java.util.List;
 
