@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,18 +19,17 @@ import java.util.List;
 @Entity
 public class Applicant {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    // Primitive types for Sql
+
     private String firstName;
 
-    // @Column(name = "lastName", nullable = false, unique = false) // name -> how it's called in the base. nullable (default -> true)
+
     private String lastName;
     private String address;
-    private Date applicationDate;
-    private String email;
+
+    private LocalDate applicationDate;
 
     private Region region;
     private DegreeLevel degreeLevel;
