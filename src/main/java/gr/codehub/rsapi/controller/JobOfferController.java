@@ -58,7 +58,7 @@ public class JobOfferController {
      */
     @PutMapping("jobOffer/{id}")
     public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
-            throws JobOfferUpdateException, JobOfferNotFoundException {
+            throws BusinessException {
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
@@ -73,7 +73,6 @@ public class JobOfferController {
      * @param positionTitle the title of the job offer
      * @param region        the region of the job offer
      * @param jobOfferDate  the date job offer was made
-     * @param skill         the skills that Job offer requires
      * @return applicants by job offer
      */
     @GetMapping("jobOffer/criteria")
@@ -94,7 +93,7 @@ public class JobOfferController {
      * @throws JobOfferIsInactive        the user tried to find a job offer and the applicant is inactive
      */
     @PutMapping("jobOffer/{id}/inactive")
-    public boolean setJobOfferInactive(@PathVariable int id) throws JobOfferNotFoundException, JobOfferIsInactive {
+    public boolean setJobOfferInactive(@PathVariable int id) throws BusinessException {
         return jobOfferService.setJobOfferInactive(id);
     }
 

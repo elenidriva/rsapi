@@ -4,7 +4,6 @@ import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.Applicant;
-import gr.codehub.rsapi.model.Skill;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,7 +20,7 @@ public interface ApplicantService {
      * @return the applicant
      * @throws ApplicantCreationException the applicant creation exception
      */
-    Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException, ApplicantNotFoundException;
+    Applicant addApplicant(ApplicantDto applicantDto) throws BusinessException;
 
     /**
      * Sets applicant inactive.
@@ -31,7 +30,7 @@ public interface ApplicantService {
      * @throws ApplicantNotFoundException the applicant not found exception
      * @throws ApplicantIsInactive        the applicant is inactive
      */
-    boolean setApplicantInactive(int applicantIndex) throws ApplicantNotFoundException, ApplicantIsInactive;
+    boolean setApplicantInactive(int applicantIndex) throws BusinessException;
 
     /**
      * Gets applicant.
@@ -40,7 +39,7 @@ public interface ApplicantService {
      * @return the applicant
      * @throws ApplicantNotFoundException the applicant not found exception
      */
-    Applicant getApplicant(int applicantIndex) throws ApplicantNotFoundException;
+    Applicant getApplicant(int applicantIndex) throws BusinessException;
 
     /**
      * Update applicant applicant.
@@ -51,7 +50,7 @@ public interface ApplicantService {
      * @throws ApplicantNotFoundException the applicant not found exception
      * @throws ApplicantUpdateException   the applicant update exception
      */
-    Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException, ApplicantUpdateException;
+    Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws BusinessException;
 
     /**
      * Gets applicants.
@@ -67,7 +66,6 @@ public interface ApplicantService {
      * @param lastName  the last name
      * @param region    the region
      * @param date      the date
-     * @param skill     the skill
      * @return the list
      * @throws ApplicantNotFoundException the applicant not found exception
      */

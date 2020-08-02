@@ -5,7 +5,6 @@ import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelApplicantReader;
 import gr.codehub.rsapi.model.Applicant;
-import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
@@ -20,8 +19,8 @@ import java.util.List;
 @RestController
 public class ApplicantController {
 
-    private ApplicantService applicantService;
-    private SkillService skillService;
+    private final ApplicantService applicantService;
+    private final SkillService skillService;
 
 
     /**
@@ -82,7 +81,6 @@ public class ApplicantController {
      * @param lastName        the last name of the applicant
      * @param region          the region of the applicant
      * @param applicationDate the date applicant made the application
-     * @param skill           the skills of the applicant
      * @return applicants by criteria
      */
     @GetMapping("applicant/criteria")
@@ -90,23 +88,10 @@ public class ApplicantController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")  LocalDate applicationDate){
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate applicationDate) {
         return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate);
     }
 
-
-
-    /**
-     * Endpoint for deleting an applicant using his id
-     *
-     * @param id the id of the applicant
-     * @return the applicant deleted
-     * @throws ApplicantNotFoundException the user tried to find an applicant that does not exist
-     */
-    @DeleteMapping("applicant/{id}")
-    public boolean deleteApplicant(@PathVariable int id) throws BusinessException {
-        return applicantService.deleteApplicant(id);
-    }
 
     /**
      * Endpoint takes the id of an applicant and makes him inactive
@@ -117,7 +102,7 @@ public class ApplicantController {
      * @throws ApplicantIsInactive        the user tried to find an applicant and the applicant is inactive
      */
     @PutMapping("applicant/{id}/inactive")
-    public boolean setApplicantInactive(@PathVariable int id) throws ApplicantNotFoundException, ApplicantIsInactive {
+    public boolean setApplicantInactive(@PathVariable int id) throws BusinessException {
         return applicantService.setApplicantInactive(id);
     }
 

@@ -4,7 +4,8 @@ import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
 import gr.codehub.rsapi.enums.MatchStatus;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.MatchException;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Match;
@@ -27,9 +28,9 @@ public class MatchServiceImpl implements MatchService {
 
 
     @Override
-    public Match createManualMatch(int applicantIndex, int jobOfferIndex) throws ApplicantNotFoundException, MatchException, JobOfferNotFoundException {
+    public Match createManualMatch(int applicantIndex, int jobOfferIndex) throws BusinessException {
         if (checkForDuplicate(applicantIndex, jobOfferIndex)) {
-            throw new MatchException("This match is already exist");
+            throw new BusinessException("This match already exists");
         } else {
             Match match = insertMatch(applicantIndex, jobOfferIndex);
             return match;
@@ -38,8 +39,8 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match finaliseMatch(int matchIndex) throws MatchNotFoundException {
-        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new MatchNotFoundException("There is no Match with id: " + matchIndex));
+    public Match finaliseMatch(int matchIndex) throws BusinessException {
+        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new BusinessException("There is no Match with id: " + matchIndex));
         match.setMatchStatus(MatchStatus.FINALISED);
         match.setMatchDate(LocalDate.now());
         return matchRepository.save(match);
@@ -47,17 +48,17 @@ public class MatchServiceImpl implements MatchService {
 
 
     @Override
-    public Match insertMatch(int applicantIndex, int jobOfferIndex) throws ApplicantNotFoundException, MatchException, JobOfferNotFoundException {
+    public Match insertMatch(int applicantIndex, int jobOfferIndex) throws BusinessException {
 
         Match match = new Match();
 
-        Applicant applicant = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+        Applicant applicant = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         if (!applicant.getStatus().equals((Status.ACTIVE)))
-            throw new MatchException(" Applicant is not available for Matches, since he does not exist.");
+            throw new BusinessException(" Applicant is not available for Matches, since he does not exist.");
 
-        JobOffer jobOffer = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new JobOfferNotFoundException("Cannot find JobOffer with id:" + applicantIndex));
+        JobOffer jobOffer = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new BusinessException("Cannot find JobOffer with id:" + applicantIndex));
         if (!jobOffer.getStatus().equals((Status.ACTIVE)))
-            throw new MatchException(" JobOffer is not available for Matches, since it does not exist.");
+            throw new BusinessException(" JobOffer is not available for Matches, since it does not exist.");
 
         match.setApplicant(applicant);
         match.setJobOffer(jobOffer);
@@ -71,12 +72,12 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match deleteMatch(int matchIndex) throws MatchNotFoundException, ApplicantNotFoundException, JobOfferNotFoundException {
-        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new MatchNotFoundException("There is no Match with id: " + matchIndex));
+    public Match deleteMatch(int matchIndex) throws BusinessException {
+        Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new BusinessException("There is no Match with id: " + matchIndex));
         match.setMatchStatus(MatchStatus.DELETED);
 
-        Applicant applicant = applicantRepository.findById(match.getApplicant().getId()).orElseThrow(() -> new ApplicantNotFoundException("Cannot find matched applicant with id:" + match.getApplicant().getId()));
-        JobOffer jobOffer = jobOfferRepository.findById(match.getJobOffer().getId()).orElseThrow(() -> new JobOfferNotFoundException("Cannot find JobOffer with id:" + match.getJobOffer().getId()));
+        Applicant applicant = applicantRepository.findById(match.getApplicant().getId()).orElseThrow(() -> new BusinessException("Cannot find matched applicant with id:" + match.getApplicant().getId()));
+        JobOffer jobOffer = jobOfferRepository.findById(match.getJobOffer().getId()).orElseThrow(() -> new BusinessException("Cannot find JobOffer with id:" + match.getJobOffer().getId()));
 
         applicant.setStatus(Status.ACTIVE);
         jobOffer.setStatus(Status.ACTIVE);
@@ -89,7 +90,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+    public boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) {
         return matchRepository.findAll().stream().anyMatch(o -> o.getApplicant().getId() == applicantIndex && o.getJobOffer().getId() == jobOfferIndex);
     }
 
@@ -105,7 +106,7 @@ public class MatchServiceImpl implements MatchService {
         list.forEach(record -> {
             try {
                 createManualMatch(record.getApp(), record.getJob());
-            } catch (ApplicantNotFoundException | MatchException | JobOfferNotFoundException e) {
+            } catch (BusinessException e) {
                 e.printStackTrace();
             }
         });
@@ -120,7 +121,8 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) throws BusinessException {
-        if(startDate.equals(null)| endDate.equals(null)) throw new BusinessException("Please define both a startDate and an endDate");
+        if (startDate.equals(null) | endDate.equals(null))
+            throw new BusinessException("Please define both a startDate and an endDate");
         return matchRepository.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
 
