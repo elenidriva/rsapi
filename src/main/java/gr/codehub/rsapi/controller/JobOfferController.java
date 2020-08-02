@@ -97,6 +97,12 @@ public class JobOfferController {
         return jobOfferService.setJobOfferInactive(id);
     }
 
+    /**
+     * Endpoint to read JobOffer data from Excel file
+     *
+     * @return returns list of JobOffers and save in DB
+     * @throws FileNotFoundException if file did not found
+     */
     @GetMapping(value = "excelJobOffer")
     public List<JobOffer> addJobOfferFromExcel() throws FileNotFoundException {
         ExcelJobOfferReader excelJobOfferReader = new ExcelJobOfferReader();

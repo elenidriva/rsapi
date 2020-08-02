@@ -106,7 +106,12 @@ public class ApplicantController {
         return applicantService.setApplicantInactive(id);
     }
 
-
+    /**
+     * Endpoint to read Applicant data from Excel file
+     *
+     * @return returns list of Applicants and save in DB
+     * @throws FileNotFoundException if file did not found
+     */
     @GetMapping(value = "excelApplicants")
     public List<Applicant> addApplicantsFromReaderNew() throws FileNotFoundException {
         ExcelApplicantReader excelApplicantReader = new ExcelApplicantReader();

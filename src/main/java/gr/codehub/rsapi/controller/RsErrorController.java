@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Endpoint that handle all the Exceptions
+ */
 @RestController
 public class RsErrorController implements ErrorController {
     @RequestMapping("error")
