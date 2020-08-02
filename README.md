@@ -92,7 +92,8 @@ $ git clone https://github.com/elenidriva/rsapi.git
 ```
 Or just download and import existing maven project in your programming environment.
 ## Run
-If not automatically configured, follow the instructions below:
+If not automatically configured, follow the instructions as follows:
+
 Run as > Maven build
 
 Add Goals: ```tomcat7:run```
