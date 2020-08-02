@@ -17,7 +17,7 @@ This is a simple Recruitment Service API. The Recruitment agency application con
 This is a simple Recruitment service API that provides various functionalities to the job applicants as well as to the recruiters. Each Applicant can insert data to the System including also a list of the skills.
 The job offer end-point works accordingly. The system supports Matching funcationalities and proposals, such as Full Match (all job offer skills required to cover a position are matched fully by an applicant) and Partial Match.
 The system offers statistic results and reporting services, e.g., most requested and most offered skills, reports according to specified range of dates.
-## End-points
+## End points
 * Reading files from Excel
 ``` 
  GET /excelApplicants (addApplicantsFromReaderNew)
