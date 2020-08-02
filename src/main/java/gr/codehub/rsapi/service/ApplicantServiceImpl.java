@@ -68,6 +68,8 @@ public class ApplicantServiceImpl implements ApplicantService {
                 }
             }
         });
+
+
         return applicant;
     }
 
@@ -92,7 +94,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         Applicant applicant;
         if (applicantInDb.getStatus().equals(Status.INACTIVE))
-            throw new ApplicantIsInactive("Applicant with id:" + applicantIndex + " is already inactive.");
+            throw new BusinessException("Applicant with id:" + applicantIndex + " is already inactive.");
         else applicantInDb.setStatus(Status.ACTIVE);
         applicant = applicantInDb;
         applicant.setStatus(Status.INACTIVE);
@@ -127,7 +129,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
         Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         if (applicantInDb.getStatus() == Status.INACTIVE)
-            throw new ApplicantUpdateException("Failed to update Applicant, because the Applicant is inactive");
+            throw new BusinessException("Failed to update Applicant, because the Applicant is inactive");
         applicantInDb.setFirstName(applicantDto.getFirstName());
         applicantInDb.setLastName(applicantDto.getLastName());
         applicantInDb.setStatus(Status.ACTIVE);
@@ -198,7 +200,6 @@ public class ApplicantServiceImpl implements ApplicantService {
     /**
      * ayti i methodos vazei se kathe applicant ola ta applicant skills
      * kai sozei stin vasi
-     *
      * @param applicants oso uparxoyn applicants sunexise na sozeis ola ta applicant skills tous
      */
     @Override
@@ -209,8 +210,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public List<Applicant> addApplicants(List<Applicant> applicants) {
-        return applicantRepository.saveAll(applicants);
+    public List<Applicant> addApplicants(List<Applicant> applicants){return applicantRepository.saveAll(applicants);
     }
 
     @Override
@@ -218,6 +218,4 @@ public class ApplicantServiceImpl implements ApplicantService {
         return applicantRepository.save(applicant);
     }
 
-
 }
-
