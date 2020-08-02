@@ -20,46 +20,57 @@ The job offer end-point works accordingly. The system supports Matching funcatio
 The system offers statistic results and reporting services, e.g., most requested and most offered skills, reports according to specified range of dates.
 ## End-points
 * Reading files from Excel
-``` GET /excelApplicants (addApplicantsFromReaderNew)
-``` GET /excelJobOffer (addJobOfferFromExcel)
-``` GET /insertSkillsFromExcel (addSkillsFromReader)
+``` 
+ GET /excelApplicants (addApplicantsFromReaderNew)
+ GET /excelJobOffer (addJobOfferFromExcel)
+ GET /insertSkillsFromExcel (addSkillsFromReader)
+ ```
 * Applicant
-``` GET/applicant (getApplicants)
-``` GET/applicant/{id} (getApplicant)
-``` GET /applicant (getApplicants) 
-``` GET/applicant/criteria/ (findApplicantsByCriteria) - criteria supported: any combination of applicationDate, firstName, lastName, region
-``` POST/applicant (addApplicant)
-``` PUT/applicant/{id} (updateApplicant)
-``` PUT/applicant/{id}/inactive (setApplicantInactive) - criteria supported: any combination of jobOfferDate, positionTitle, region
+``` 
+ GET/applicant (getApplicants)
+ GET/applicant/{id} (getApplicant)
+ GET /applicant (getApplicants) 
+ GET/applicant/criteria/ (findApplicantsByCriteria) - criteria supported: any combination of applicationDate, firstName, lastName, region
+ POST/applicant (addApplicant)
+ PUT/applicant/{id} (updateApplicant)
+ PUT/applicant/{id}/inactive (setApplicantInactive) - criteria supported: any combination of jobOfferDate, positionTitle, region
+```
 
 * JobOffer
-``` GET/jobOffer (getJobOffers)
-``` GET/jobOffer/{id} (getJobOffer)
-``` GET/jobOffer/criteria (findJobOffersByCriteria)
-``` POST/jobOffer (addJobOffer)
-``` PUT/jobOffer/{id} (updateJobOffer)
-``` PUT/jobOffer/{id}/inactive (setJobOfferInactive)
+```
 
+ GET/jobOffer (getJobOffers)
+ GET/jobOffer/{id} (getJobOffer)
+ GET/jobOffer/criteria (findJobOffersByCriteria)
+ POST/jobOffer (addJobOffer)
+ PUT/jobOffer/{id} (updateJobOffer)
+ PUT/jobOffer/{id}/inactive (setJobOfferInactive)
+```
 * Skill
-``` GET/skill (getSkills)
-``` POST/skill (addSkill)
-``` POST/skillsMerge (mergeSkills)
-``` POST/skillSplit (splitSkill)
+``` 
+ GET/skill (getSkills)
+ POST/skill (addSkill)
+ POST/skillsMerge (mergeSkills)
+ POST/skillSplit (splitSkill)
+ ```
 
 * Match
-``` GET/fullMatch (findFullMatches)
-``` GET/partialMatches (findPartialMatches)
-``` GET/proposed (getProposedMatches)
-``` GET/MostRecentFinalisedMatches (getMostRecentFinalisedMatches)
-``` GET/reports (getFinalisedMatchesWithDateRange)
-``` POST/match (createManualMatch)
-``` PUT/match (finaliseMatch)
-``` DELETE/match/{id} (deleteMatch)
+```
+ GET/fullMatch (findFullMatches)
+ GET/partialMatches (findPartialMatches)
+ GET/proposed (getProposedMatches)
+ GET/MostRecentFinalisedMatches (getMostRecentFinalisedMatches)
+ GET/reports (getFinalisedMatchesWithDateRange)
+ POST/match (createManualMatch)
+ PUT/match (finaliseMatch)
+ DELETE/match/{id} (deleteMatch)
+ ```
 * Report
-``` GET/notMatchedSkills
-``` GET/offered (getMostOfferedSkills)
-``` GET/requested (getMostRequestedSkills)
-
+```
+ GET/notMatchedSkills
+ GET/offered (getMostOfferedSkills)
+ GET/requested (getMostRequestedSkills)
+```
 
 ## Technologies & Tools
 * Spring MVC
