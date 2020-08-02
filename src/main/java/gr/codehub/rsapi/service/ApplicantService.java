@@ -2,10 +2,7 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.ApplicantCreationException;
-import gr.codehub.rsapi.exception.ApplicantIsInactive;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 
@@ -24,7 +21,7 @@ public interface ApplicantService {
      * @return the applicant
      * @throws ApplicantCreationException the applicant creation exception
      */
-    Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException;
+    Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException, ApplicantNotFoundException;
 
     /**
      * Sets applicant inactive.
@@ -74,7 +71,7 @@ public interface ApplicantService {
      * @return the list
      * @throws ApplicantNotFoundException the applicant not found exception
      */
-    List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date, Skill skill);
+    List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date);
 
     /**
      * Delete applicant boolean.
@@ -83,7 +80,7 @@ public interface ApplicantService {
      * @return the boolean
      * @throws ApplicantNotFoundException the applicant not found exception
      */
-    boolean deleteApplicant(int applicantIndex) throws ApplicantNotFoundException;
+    boolean deleteApplicant(int applicantIndex) throws BusinessException;
 
     /**
      * Add applicants list.

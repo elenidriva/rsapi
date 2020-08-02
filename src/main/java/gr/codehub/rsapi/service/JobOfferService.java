@@ -2,10 +2,7 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.JobOfferCreationException;
-import gr.codehub.rsapi.exception.JobOfferIsInactive;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 
@@ -47,7 +44,7 @@ public interface JobOfferService {
      * @return the job offer
      * @throws JobOfferCreationException the job offer creation exception
      */
-    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException;
+    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws BusinessException;
 
     /**
      * Find job offers by criteria list.
@@ -58,7 +55,7 @@ public interface JobOfferService {
      * @param skill         the skill
      * @return the list
      */
-    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date, Skill skill);
+    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date);
 
     /**
      * Sets job offer inactive.

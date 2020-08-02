@@ -1,12 +1,13 @@
 package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
 import gr.codehub.rsapi.model.*;
 import gr.codehub.rsapi.repository.SkillRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class SkillServiceImpl implements SkillService {
-    @Autowired
+
     private SkillRepository skillRepository;
 
     @Override
@@ -58,14 +60,14 @@ public class SkillServiceImpl implements SkillService {
             throw new SkillCreationException("Null Skill");
         }
         List<Skill> newSkillsArray = new ArrayList<>();
-        String skillTitle  = skillDto.getTitle();
+        String skillTitle = skillDto.getTitle();
         String[] skills = skillTitle.split(" ");
         skillFromDb.setTitle(skills[0]);
         skillRepository.save(skillFromDb);
         newSkillsArray.add(skillFromDb);
         boolean firstTime = true;
-        for(String skillName: skills){
-            if(firstTime){
+        for (String skillName : skills) {
+            if (firstTime) {
                 firstTime = false;
                 continue;
             }
@@ -77,7 +79,7 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws SkillNotFoundException {
+    public Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException {
         Skill skillFromDb = skillRepository.findSkillByTitle(skillDto.getTitle()).orElseThrow(() -> new SkillNotFoundException("Skill not found"));
         Skill skillFromDb2 = skillRepository.findSkillByTitle(skillDto2.getTitle()).orElseThrow(() -> new SkillNotFoundException("Skill not found"));
         deleteSkill(skillFromDb.getId());
@@ -100,7 +102,10 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public boolean deleteSkill(int skillDtoId) throws  SkillNotFoundException {
+    public boolean deleteSkill(int skillDtoId) throws BusinessException {
+        skillRepository.findById(skillDtoId).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + skillDtoId));
+
+
         skillRepository.deleteById(skillDtoId);
         return true;
     }

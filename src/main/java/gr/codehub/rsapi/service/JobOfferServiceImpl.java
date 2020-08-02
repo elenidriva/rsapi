@@ -3,14 +3,11 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.JobOfferCreationException;
-import gr.codehub.rsapi.exception.JobOfferIsInactive;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferUpdateException;
-import gr.codehub.rsapi.model.JobOffer;
-import gr.codehub.rsapi.model.Skill;
+import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.model.*;
 import gr.codehub.rsapi.repository.JobOfferRepository;
 import gr.codehub.rsapi.repository.JobOfferSkillRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +15,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class JobOfferServiceImpl implements JobOfferService {
 
-    @Autowired
     private JobOfferRepository jobOfferRepository;
-    @Autowired
     private JobOfferSkillRepository jobOfferSkillRepository;
 
     /**
@@ -34,7 +30,7 @@ public class JobOfferServiceImpl implements JobOfferService {
      * @throws JobOfferCreationException the user tried to create a job offer without the required fields
      */
     @Override
-    public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException {
+    public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws BusinessException {
         JobOffer jobOffer = new JobOffer();
         if (jobOfferDto == null ||
                 jobOfferDto.getCompany() == null ||
@@ -48,8 +44,19 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOffer.setRegion(jobOfferDto.getRegion());
         jobOffer.setStatus(Status.ACTIVE);
         jobOffer.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
+        jobOffer.setJobOfferDate(LocalDate.now());
 
-        return jobOfferRepository.save(jobOffer);
+        jobOfferRepository.save(jobOffer);
+
+        JobOffer job2 = jobOfferRepository.findById(jobOffer.getId()).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + jobOffer.getId()));
+        JobOfferSkill jobSkill = new JobOfferSkill();
+        jobSkill.setJobOffer(job2);
+        jobOfferDto.getJobOfferSkillList().forEach(o -> {
+            jobSkill.setSkill(o.getSkill());
+        });
+        jobOfferSkillRepository.save(jobSkill);
+        return jobOffer;
+
     }
 
 
@@ -97,8 +104,8 @@ public class JobOfferServiceImpl implements JobOfferService {
      */
     @Override
     public List<JobOffer> findJobOffersByCriteria
-            (String positionTitle, Region region, LocalDate date, Skill skill) {
-        return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date, skill);
+    (String positionTitle, Region region, LocalDate date) {
+        return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date);
     }
 
     /**

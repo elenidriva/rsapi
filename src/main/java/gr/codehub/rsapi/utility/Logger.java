@@ -1,8 +1,8 @@
 package gr.codehub.rsapi.utility;
 
 public class Logger {
-    public static void log(String text){
-        System.out.println("LOG: " +text);
+    public static void log(String text) {
+        System.out.println("LOG: " + text);
 
         /**
          * if i would like to show log message in window
@@ -11,8 +11,8 @@ public class Logger {
 
     }
 
-    public static void print(String text){
-        System.out.println("PRINT: " +text);
+    public static void print(String text) {
+        System.out.println("PRINT: " + text);
     }
 
 }

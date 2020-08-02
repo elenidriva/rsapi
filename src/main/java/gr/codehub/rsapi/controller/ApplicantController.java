@@ -2,40 +2,37 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.ApplicantCreationException;
-import gr.codehub.rsapi.exception.ApplicantIsInactive;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelApplicantReader;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class ApplicantController {
 
-    @Autowired
     private ApplicantService applicantService;
-    @Autowired
     private SkillService skillService;
 
 
     /**
-     * Endpoint for adding an applicant
+     * Provides an endpoint that allows the user to insert an applicant
      *
-     * @param applicantDto gets from the user a dto object
-     * @return json contained the added  applicant
+     * @param applicantDto The applicantDto object
+     * @return Applicant  It returns the inserted applicant object
      * @throws ApplicantCreationException the user tried to add an applicant without the required fields
      */
     @PostMapping("applicant")
-    public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws ApplicantCreationException {
+    public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws BusinessException {
 
         return applicantService.addApplicant(applicantDto);
     }
@@ -51,7 +48,7 @@ public class ApplicantController {
      * @throws ApplicantUpdateException   the user tried to update an applicant and the applicant is inactive
      */
     @PutMapping("applicant/{id}")
-    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws ApplicantNotFoundException, ApplicantUpdateException {
+    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws BusinessException {
         return applicantService.updateApplicant(applicantDto, id);
     }
 
@@ -63,7 +60,7 @@ public class ApplicantController {
      * @throws ApplicantNotFoundException the user tried to find an applicant that does not exists
      */
     @GetMapping("applicant/{id}")
-    public Applicant getApplicant(@PathVariable int id) throws ApplicantNotFoundException {
+    public Applicant getApplicant(@PathVariable int id) throws BusinessException {
         return applicantService.getApplicant(id);
     }
 
@@ -93,10 +90,10 @@ public class ApplicantController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) LocalDate applicationDate,
-            @RequestParam(required = false) Skill skill) {
-        return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate, skill);
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")  LocalDate applicationDate){
+        return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate);
     }
+
 
 
     /**
@@ -107,7 +104,7 @@ public class ApplicantController {
      * @throws ApplicantNotFoundException the user tried to find an applicant that does not exist
      */
     @DeleteMapping("applicant/{id}")
-    public boolean deleteApplicant(@PathVariable int id) throws ApplicantNotFoundException {
+    public boolean deleteApplicant(@PathVariable int id) throws BusinessException {
         return applicantService.deleteApplicant(id);
     }
 

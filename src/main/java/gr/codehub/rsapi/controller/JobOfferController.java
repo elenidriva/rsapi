@@ -5,28 +5,22 @@ import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelJobOfferReader;
 import gr.codehub.rsapi.model.JobOffer;
-import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.JobOfferService;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class JobOfferController {
 
     private final JobOfferService jobOfferService;
     private final SkillService skillService;
 
-
-    @Autowired
-    public JobOfferController(JobOfferService jobOfferService, SkillService skillService) {
-        this.jobOfferService = jobOfferService;
-        this.skillService = skillService;
-    }
 
     /**
      * Endpoint for adding a job offer
@@ -36,7 +30,7 @@ public class JobOfferController {
      * @throws JobOfferCreationException the user tried to add a job offer without the required fields
      */
     @PostMapping("jobOffer")
-    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws JobOfferCreationException {
+    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws BusinessException {
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
@@ -86,9 +80,8 @@ public class JobOfferController {
     public List<JobOffer> findJobOffersByCriteria(
             @RequestParam(required = false) String positionTitle,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) LocalDate jobOfferDate,
-            @RequestParam(required = false) Skill skill) {
-        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate, skill);
+            @RequestParam(required = false) LocalDate jobOfferDate) {
+        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate);
 
     }
 

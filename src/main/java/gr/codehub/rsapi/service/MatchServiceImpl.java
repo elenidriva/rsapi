@@ -4,46 +4,26 @@ import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
 import gr.codehub.rsapi.enums.MatchStatus;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.MatchException;
-import gr.codehub.rsapi.exception.MatchNotFoundException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Match;
-import gr.codehub.rsapi.repository.*;
+import gr.codehub.rsapi.repository.ApplicantRepository;
+import gr.codehub.rsapi.repository.JobOfferRepository;
+import gr.codehub.rsapi.repository.MatchRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class MatchServiceImpl implements MatchService {
 
     private final MatchRepository matchRepository;
     private final ApplicantRepository applicantRepository;
-    private final ApplicantSkillRepository applicantSkillRepository;
     private final JobOfferRepository jobOfferRepository;
-    private final JobOfferService jobOfferService;
-    private final ApplicantService applicantService;
-    private final JobOfferSkillRepository jobOfferSkillRepository;
-
-    public MatchServiceImpl(MatchRepository matchRepository,
-                            ApplicantRepository applicantRepository,
-                            ApplicantSkillRepository applicantSkillRepository,
-                            JobOfferRepository jobOfferRepository,
-                            JobOfferService jobOfferService,
-                            ApplicantService applicantService,
-                            JobOfferSkillRepository jobOfferSkillRepository) {
-
-        this.matchRepository = matchRepository;
-        this.applicantRepository = applicantRepository;
-        this.applicantSkillRepository = applicantSkillRepository;
-        this.jobOfferRepository = jobOfferRepository;
-        this.jobOfferService = jobOfferService;
-        this.applicantService = applicantService;
-        this.jobOfferSkillRepository = jobOfferSkillRepository;
-    }
 
 
     @Override
@@ -139,7 +119,8 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) throws BusinessException {
+        if(startDate.equals(null)| endDate.equals(null)) throw new BusinessException("Please define both a startDate and an endDate");
         return matchRepository.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
 
