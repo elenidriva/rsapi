@@ -23,7 +23,15 @@ import java.util.Iterator;
 import java.util.List;
 
 
+
 public class ExcelApplicantReader implements Reader<Applicant> {
+
+    /**
+     * Method to read from Excel the Applicant data
+     *
+     * @return list of applicants
+     * @thows FileNotFoundException
+     */
     @Override
     public List<Applicant> readFromExcel() throws FileNotFoundException {
         Logger.log("Read Applicants from Given Excel File");
@@ -71,6 +79,13 @@ public class ExcelApplicantReader implements Reader<Applicant> {
         return applicantList;
     }
 
+    /**
+     * Method to extract Applicant from Excel and set the cell value with Applicant fields
+     *
+     * @param applicant
+     * @param cellValues
+     * @return applicant
+     */
     private Applicant extractApplicant(Applicant applicant, List<String> cellValues) {
 
         applicant.setFirstName(cellValues.get(0));

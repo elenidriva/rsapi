@@ -22,6 +22,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ExcelJobOfferReader implements Reader<JobOffer> {
+
+    /**
+     * Method to read from Excel the JobOffer data
+     *
+     * @return list of jobOffers
+     * @thows FileNotFoundException
+     */
     @Override
     public List<JobOffer> readFromExcel() throws FileNotFoundException {
         Logger.log("Read JobOffers from Given Excel File");
@@ -65,6 +72,13 @@ public class ExcelJobOfferReader implements Reader<JobOffer> {
         return jobOfferList;
     }
 
+    /**
+     * Method to extract JobOffer from Excel and set the cell value with Applicant fields
+     *
+     * @param jobOffer
+     * @param cellValues
+     * @return jobOffer
+     */
     private JobOffer extractJobOffer(JobOffer jobOffer, List<String> cellValues) {
         jobOffer.setCompany(cellValues.get(0));
         jobOffer.setPositionTitle(cellValues.get(1));

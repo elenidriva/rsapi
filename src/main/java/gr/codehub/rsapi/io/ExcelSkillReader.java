@@ -14,12 +14,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Reading Skills from datarsapi.xlsx
- * Adding Skills into ArrayList
- */
+
 public class ExcelSkillReader implements Reader<Skill> {
 
+    /**
+     * Method to read from Excel the Skill data
+     *
+     * @return list of Skills
+     * @thows FileNotFoundException
+     */
     public List<Skill> readFromExcel() throws FileNotFoundException {
         Logger.log("Read Skills from Given Excel File");
 
