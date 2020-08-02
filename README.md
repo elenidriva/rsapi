@@ -4,11 +4,10 @@ This is a simple Recruitment Service API. The Recruitment agency application con
 * Matching Services
 * Reporting Services
 
-![readme_photo](https://i.ibb.co/tXD6Z2R/readme-photo.png)
 
 ## Table of Contents
 * [General info](#general-info)
-* [End-points] (#end--points)
+* [End-points] (#end-points)
 * [Technologies & Tools](#technologies--tools)
 * [Setup](#setup)
 * [Run](#run)
