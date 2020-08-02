@@ -7,7 +7,7 @@ This is a simple Recruitment Service API. The Recruitment agency application con
 
 ## Table of Contents
 * [General info](#general-info)
-* [End points] (#end-points)
+* [End points](#end-points)
 * [Technologies & Tools](#technologies--tools)
 * [Setup](#setup)
 * [Run](#run)
