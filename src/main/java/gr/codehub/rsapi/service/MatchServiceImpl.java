@@ -27,6 +27,13 @@ public class MatchServiceImpl implements MatchService {
     private final JobOfferRepository jobOfferRepository;
 
 
+    /**
+     * Create a manual match
+     *
+     * @param applicantIndex, jobOfferIndex
+     * @return Match
+     * @throws BusinessException
+     */
     @Override
     public Match createManualMatch(int applicantIndex, int jobOfferIndex) throws BusinessException {
         if (checkForDuplicate(applicantIndex, jobOfferIndex)) {
@@ -38,6 +45,13 @@ public class MatchServiceImpl implements MatchService {
 
     }
 
+    /**
+     * Create a finalize match
+     *
+     * @param matchIndex
+     * @return Match
+     * @throws BusinessException
+     */
     @Override
     public Match finaliseMatch(int matchIndex) throws BusinessException {
         Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new BusinessException("There is no Match with id: " + matchIndex));
@@ -47,6 +61,13 @@ public class MatchServiceImpl implements MatchService {
     }
 
 
+    /**
+     * Insert a new match
+     *
+     * @param applicantIndex, jobOfferIndex
+     * @return Match
+     * @throws BusinessException
+     */
     @Override
     public Match insertMatch(int applicantIndex, int jobOfferIndex) throws BusinessException {
 
@@ -71,6 +92,13 @@ public class MatchServiceImpl implements MatchService {
 
     }
 
+    /**
+     * Delete a given match
+     *
+     * @param matchIndex
+     * @return Match
+     * @throws BusinessException
+     */
     @Override
     public Match deleteMatch(int matchIndex) throws BusinessException {
         Match match = matchRepository.findById(matchIndex).orElseThrow(() -> new BusinessException("There is no Match with id: " + matchIndex));
@@ -89,18 +117,34 @@ public class MatchServiceImpl implements MatchService {
         return match;
     }
 
+    /**
+     * Checking Duplicates of a given applicantId and JobOfferId
+     *
+     * @param applicantIndex, jobOfferIndex
+     * @return Match
+     * @throws BusinessException
+     */
     @Override
     public boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) {
         return matchRepository.findAll().stream().anyMatch(o -> o.getApplicant().getId() == applicantIndex && o.getJobOffer().getId() == jobOfferIndex);
     }
 
-
+    /**
+     * Find the partial matches
+     *
+     * @return list of JobOffersApplicantsDto
+     */
     @Override
     public List<JobOffersApplicantsDto> findPartialMatches() {
         return matchRepository.findSkillMatches();
     }
 
 
+    /**
+     * Find full matches
+     *
+     * @return list of FullMatchDto
+     */
     public List<FullMatchDto> findFullMatches() {
         List<FullMatchDto> list = matchRepository.findFullMatches();
         list.forEach(record -> {
@@ -114,11 +158,23 @@ public class MatchServiceImpl implements MatchService {
 
     }
 
+    /**
+     * Get the most recent finalized matches
+     *
+     * @return list of matches
+     */
     @Override
     public List<Match> getMostRecentFinalisedMatches() {
         return matchRepository.getFinalisedfMatchesOrderedByDate();
     }
 
+    /**
+     * Get the finalized matches of a date range (reporting)
+     *
+     * @param startDate, endDate
+     * @return list of Match
+     * @throws BusinessException
+     */
     @Override
     public List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) throws BusinessException {
         if (startDate.equals(null) | endDate.equals(null))
@@ -126,6 +182,11 @@ public class MatchServiceImpl implements MatchService {
         return matchRepository.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
 
+    /**
+     * Get the 20 proposed matches
+     *
+     * @return list Match
+     */
     @Override
     public List<Match> getProposedMatches() {
         return matchRepository.getProposedMatches();
