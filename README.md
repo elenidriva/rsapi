@@ -11,6 +11,7 @@ This is a simple Recruitment Service API. The Recruitment agency application con
 * [Technologies & Tools](#technologies--tools)
 * [Setup](#setup)
 * [Run](#run)
+* [Wiki](#wiki)
 * [Future improvements & To dos](#future-improvements--to-dos)
 * [License](#license)
 ## General info
@@ -103,6 +104,56 @@ In order to access the DB according to the configuration, use the following:
 Username: sa
 
 Password: passw0rd
+
+## Wiki
+The Stored procedure that was implemented and used in order to provide the full matches between the applicable pairs of job-applicant is as follows:
+
+```
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE FullMatcher AS
+BEGIN
+	SET NOCOUNT ON;
+select query1.app, query1.job
+from ( 
+SELECT ap.id app,
+	  jo.id job,
+	  count(0) count1
+  FROM [RSAPI].[dbo].Applicant ap
+  INNER JOIN [RSAPI].[dbo].[ApplicantSkill] aps 
+  ON ap.id = aps.applicant_id
+  INNER JOIN [RSAPI].[dbo].[Skill] sk
+  ON aps.skill_id = sk.id
+
+  INNER JOIN [RSAPI].[dbo].[JobOfferSkill] jos 
+  ON jos.skill_id = sk.id
+  INNER JOIN [RSAPI].[dbo].[JobOffer] jo
+  ON jos.jobOffer_id=jo.id
+  WHERE ap.status = 0
+  GROUP BY ap.id, jo.id 
+
+
+) query1
+inner join (
+
+	SELECT jos.jobOffer_id job, count(0) count2
+	FROM [RSAPI].[dbo].Skill sk
+	INNER JOIN [RSAPI].[dbo].[JobOfferSkill] jos 
+	ON sk.id = jos.skill_id 
+	GROUP BY jos.jobOffer_id
+
+
+) query2
+on query1.job = query2.job
+where query1.count1 >= query2.count2
+
+  
+END
+GO
+```
 
 ## Future improvements & To dos
 * Include a View (front-end with .jsp) in order to complete the MCV pattern and make the web application more user-friendly and complete
