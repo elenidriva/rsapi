@@ -68,8 +68,6 @@ public class ApplicantServiceImpl implements ApplicantService {
                 }
             }
         });
-
-
         return applicant;
     }
 
