@@ -19,5 +19,5 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Integer> {
             " and (:lastName is null or a.lastName = :lastName)" +
             " and (:region is null or a.region = :region)" +
             " and (:applicationDate is null or a.applicationDate = :applicationDate) ")
-    List<Applicant> findApplicantByCriteria(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("region") Region region, @Param("applicationDate") LocalDate applicationDate);}
-//	"select * from Applicant WHERE (applicationDate > = '' or applicationDate= :applicationDate) and firstName = :firstName and (lastName = '' or lastName = :lastName)"
+    List<Applicant> findApplicantByCriteria(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("region") Region region, @Param("applicationDate") LocalDate applicationDate);
+}

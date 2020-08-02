@@ -2,7 +2,7 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class MatchController {
 
 
     @DeleteMapping("match/{id}")
-    public Match deleteMatch(@PathVariable int matchId) throws MatchNotFoundException, ApplicantNotFoundException, JobOfferNotFoundException {
+    public Match deleteMatch(@PathVariable int matchId) throws BusinessException {
         return matchService.deleteMatch(matchId);
     }
 
@@ -30,14 +30,14 @@ public class MatchController {
     }
 
     @PutMapping("match")
-    public Match finaliseMatch(@RequestParam int matchId) throws MatchNotFoundException {
+    public Match finaliseMatch(@RequestParam int matchId) throws BusinessException {
         return matchService.finaliseMatch(matchId);
 
     }
 
     @PostMapping("match")
     public Match createManualMatch(@RequestParam int applicantId,
-                                   @RequestParam int jobOfferId) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+                                   @RequestParam int jobOfferId) throws BusinessException {
         return matchService.createManualMatch(applicantId, jobOfferId);
     }
 
@@ -61,13 +61,13 @@ public class MatchController {
     }
 
     @GetMapping("check")
-    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws BusinessException {
         return matchService.checkForDuplicate(applicantIndex, jobOfferIndex);
 
     }
 
     @GetMapping("proposed")
-    public List<Match> getProposedMatches() throws MatchException, ApplicantNotFoundException, JobOfferNotFoundException {
+    public List<Match> getProposedMatches() {
         return matchService.getProposedMatches();
 
     }

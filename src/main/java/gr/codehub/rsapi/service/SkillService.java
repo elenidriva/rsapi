@@ -25,16 +25,16 @@ public interface SkillService {
     /**
      * Add skill skill.
      *
-     * @param skill the skill
+     * @param skillDto the skill
      * @return the skill
      * @throws SkillCreationException       the skill creation exception
      * @throws SkillNotFoundException       the skill not found exception
      * @throws SkillIsAlreadyExistException the skill is already exist exception
      */
-    Skill addSkill(SkillDto skillDto) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException;
+    Skill addSkill(SkillDto skillDto) throws BusinessException;
 
 
-    List<Skill> splitSkill(SkillDto skillDto) throws SkillNotFoundException, SkillCreationException, SkillIsAlreadyExistException;
+    List<Skill> splitSkill(SkillDto skillDto) throws BusinessException;
 
     Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException;
 
@@ -58,7 +58,7 @@ public interface SkillService {
     /**
      * Add job offer skills from reader.
      *
-     * @param savedJobOffers the saved job offers
+     * @param jobOffers the saved job offers
      */
     void addJobOfferSkillsFromReader(List<JobOffer> jobOffers);
 

@@ -2,9 +2,6 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.SkillDto;
 import gr.codehub.rsapi.exception.BusinessException;
-import gr.codehub.rsapi.exception.SkillCreationException;
-import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
-import gr.codehub.rsapi.exception.SkillNotFoundException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.SkillService;
@@ -27,7 +24,7 @@ public class SkillController {
     }
 
     @PostMapping(value = "skill")
-    public Skill addSkill(@RequestBody SkillDto skillDto) throws SkillCreationException, SkillIsAlreadyExistException, SkillNotFoundException {
+    public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException {
         return skillService.addSkill(skillDto);
     }
 
@@ -39,8 +36,8 @@ public class SkillController {
     }
 
 
-    @PostMapping(value = "skillSplitt")
-    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws SkillCreationException, SkillIsAlreadyExistException, SkillNotFoundException {
+    @PostMapping(value = "skillSplit")
+    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException {
         return skillService.splitSkill(skillDto);
     }
 

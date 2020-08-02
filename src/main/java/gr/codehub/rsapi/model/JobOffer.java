@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;

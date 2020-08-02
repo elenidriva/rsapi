@@ -22,9 +22,7 @@ public enum Region {
         this.value = value;
         this.location = location;
     }
-    public int getValue() {
-        return value;
-    }
+
     /**
      * This method breeds the string by checking whether the region is the same
      * as the location that is of the string type
@@ -38,6 +36,10 @@ public enum Region {
                 return region;
         }
         return Region.findRegionByLocation(location);
+    }
+
+    public int getValue() {
+        return value;
     }
 
 }
