@@ -1,14 +1,13 @@
 package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.SkillCreationException;
-import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
-import gr.codehub.rsapi.exception.SkillNotFoundException;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class SkillController {
     }
 
     @PostMapping(value = "skill")
-    public Skill addSkill(@RequestBody SkillDto skillDto) throws SkillCreationException, SkillIsAlreadyExistException, SkillNotFoundException {
+    public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException {
         return skillService.addSkill(skillDto);
     }
 
@@ -37,13 +36,13 @@ public class SkillController {
     }
 
 
-    @PostMapping(value = "skillSplitt")
-    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws SkillCreationException, SkillIsAlreadyExistException, SkillNotFoundException {
+    @PostMapping(value = "skillSplit")
+    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException {
         return skillService.splitSkill(skillDto);
     }
 
     @PostMapping(value = "skillsMerge")
-    public Skill mergeSkills(@RequestParam String skillTitle1, @RequestParam String skillTitle2) throws SkillCreationException, SkillIsAlreadyExistException, SkillNotFoundException {
+    public Skill mergeSkills(@RequestParam String skillTitle1, @RequestParam String skillTitle2) throws BusinessException {
         return skillService.mergeSkills(new SkillDto(skillTitle1), new SkillDto(skillTitle2));
     }
 }

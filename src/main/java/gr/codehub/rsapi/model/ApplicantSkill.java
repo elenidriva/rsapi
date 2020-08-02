@@ -21,6 +21,7 @@ public class ApplicantSkill {
     @ManyToOne
     @ToString.Exclude
     private Applicant applicant;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @ToString.Exclude
     private Skill skill;

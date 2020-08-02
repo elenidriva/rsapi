@@ -7,3 +7,4 @@ public interface OfferedRequestedDto {
     int getOccurences();
 
 }
+

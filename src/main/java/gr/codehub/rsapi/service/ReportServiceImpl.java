@@ -3,20 +3,17 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.OfferedRequestedDto;
 import gr.codehub.rsapi.repository.MatchRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class ReportServiceImpl implements ReportService {
 
     private final MatchRepository matchRepository;
 
-    @Autowired
-    public ReportServiceImpl(MatchRepository matchRepository) {
-        this.matchRepository = matchRepository;
-    }
 
     @Override
     public List<OfferedRequestedDto> getMostOfferedSkills() {

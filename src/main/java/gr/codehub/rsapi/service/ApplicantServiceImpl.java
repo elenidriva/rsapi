@@ -3,46 +3,38 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.ApplicantCreationException;
-import gr.codehub.rsapi.exception.ApplicantIsInactive;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.ApplicantRepository;
 import gr.codehub.rsapi.repository.ApplicantSkillRepository;
 import gr.codehub.rsapi.repository.SkillRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
-
+@AllArgsConstructor
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
     private final ApplicantSkillRepository applicantSkillRepository;
     private final SkillRepository skillRepository;
+    private final SkillService skillService;
 
-    @Autowired
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository, ApplicantSkillRepository applicantSkillRepository, SkillRepository skillRepository) {
-        this.applicantRepository = applicantRepository;
-        this.applicantSkillRepository = applicantSkillRepository;
-        this.skillRepository = skillRepository;
-    }
 
     /**
      * This method takes the data from dto and passes the data needed to create the applicant and saves it in the base
      *
      * @param applicantDto gets from the user a dto object
-     * @return applicant with id and saves to the data base
+     * @return applicant with id and saves it to the data base
      * @throws ApplicantCreationException the user tried to create an applicant without the required fields
      */
     @Override
-    public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantCreationException {
+    public Applicant addApplicant(ApplicantDto applicantDto) throws BusinessException {
         Applicant applicant = new Applicant();
         if (applicantDto == null) throw new ApplicantCreationException("You did not add any of the required fields");
 
@@ -57,7 +49,35 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicant.setStatus(Status.ACTIVE);
 
         applicantRepository.save(applicant);
+        System.out.println(applicant.getId());
+
+        Applicant applFromRep = applicantRepository.findById(applicant.getId()).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicant.getId()));
+        ApplicantSkill appSkill = new ApplicantSkill();
+        appSkill.setApplicant(applFromRep);
+        applicantDto.getApplicantSkillList().forEach(o -> {
+            Skill skillFromDb = skillRepository.findBySkillTitle(o.getSkill().getTitle());
+            if (skillFromDb != null) {
+                appSkill.setSkill(skillFromDb);
+                applicantSkillRepository.save(appSkill);
+            } else {
+                try {
+                    applicantRepository.deleteById(applicant.getId());
+                    throw new BusinessException("Please insert a skill that exists in the DB. Your applicant profile was not created.");
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
         return applicant;
+    }
+
+    public List<ApplicantSkill> addAppSkillToApplicant(List<ApplicantSkill> applicantSkillList, Applicant applicant) {
+        for (ApplicantSkill applicantSkill : applicantSkillList) {
+            applicantSkill.setApplicant(applicant);
+        }
+        return applicantSkillRepository.saveAll(applicantSkillList);
     }
 
     /**
@@ -70,8 +90,8 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @throws ApplicantIsInactive        the user tried to do inactive an applicant that is already inactive
      */
     @Override
-    public boolean setApplicantInactive(int applicantIndex) throws ApplicantNotFoundException, ApplicantIsInactive {
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+    public boolean setApplicantInactive(int applicantIndex) throws BusinessException {
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         Applicant applicant;
         if (applicantInDb.getStatus().equals(Status.INACTIVE))
             throw new ApplicantIsInactive("Applicant with id:" + applicantIndex + " is already inactive.");
@@ -91,8 +111,8 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @throws ApplicantNotFoundException The user tried to find an applicant that does not exist in the data base
      */
     @Override
-    public Applicant getApplicant(int applicantIndex) throws ApplicantNotFoundException {
-        return applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("There is no such Applicant in the DB."));
+    public Applicant getApplicant(int applicantIndex) throws BusinessException {
+        return applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("There is no such Applicant in the DB."));
     }
 
     /**
@@ -105,9 +125,9 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @throws ApplicantUpdateException   The user tried to update the applicant but the applicant is inactive
      */
     @Override
-    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantNotFoundException, ApplicantUpdateException {
+    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws BusinessException {
 
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new ApplicantNotFoundException("Cannot find applicant with id:" + applicantIndex));
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         if (applicantInDb.getStatus() == Status.INACTIVE)
             throw new ApplicantUpdateException("Failed to update Applicant, because the Applicant is inactive");
         applicantInDb.setFirstName(applicantDto.getFirstName());
@@ -137,31 +157,31 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @param lastName  the last name of the applicant
      * @param region    the region of the applicant
      * @param date      the date that appllicant made the application
-     * @param skill     the applicant`s skills
      * @return a list of applicants based on the criteria that become from the user
      */
     @Override
-    public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date, Skill skill) {
+    public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date) {
 
-        return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date, skill);
+        return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date);
 
     }
+
 
     /**
      * This method searches the base if there is an applicant with this id and if there is it delete it
      *
      * @param applicantIndex takes the ID of an applicant and finds if exists
-     * @return true if applicant it was actually deleted
+     * @return true if applicant was actually deleted
      * @throws ApplicantNotFoundException the user tried to delete an applicant with id that does not exist in data base
      */
     @Override
-    public boolean deleteApplicant(int applicantIndex) throws ApplicantNotFoundException {
+    public boolean deleteApplicant(int applicantIndex) throws BusinessException {
+        applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         applicantRepository.deleteById(applicantIndex);
         return true;
     }
 
     /**
-     *
      * @param applicant
      * @param skill
      * @return
@@ -202,4 +222,6 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 
 }
+
+
 

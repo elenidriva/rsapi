@@ -5,7 +5,6 @@ import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelJobOfferReader;
 import gr.codehub.rsapi.model.JobOffer;
-import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.JobOfferService;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ public class JobOfferController {
     private final SkillService skillService;
 
 
-
     /**
      * Endpoint for adding a job offer
      *
@@ -32,7 +30,7 @@ public class JobOfferController {
      * @throws JobOfferCreationException the user tried to add a job offer without the required fields
      */
     @PostMapping("jobOffer")
-    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws JobOfferCreationException {
+    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws BusinessException {
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
@@ -60,7 +58,7 @@ public class JobOfferController {
      */
     @PutMapping("jobOffer/{id}")
     public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
-            throws JobOfferUpdateException, JobOfferNotFoundException {
+            throws BusinessException {
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
@@ -75,16 +73,14 @@ public class JobOfferController {
      * @param positionTitle the title of the job offer
      * @param region        the region of the job offer
      * @param jobOfferDate  the date job offer was made
-     * @param skill         the skills that Job offer requires
      * @return applicants by job offer
      */
     @GetMapping("jobOffer/criteria")
     public List<JobOffer> findJobOffersByCriteria(
             @RequestParam(required = false) String positionTitle,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) LocalDate jobOfferDate,
-            @RequestParam(required = false) Skill skill) {
-        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate, skill);
+            @RequestParam(required = false) LocalDate jobOfferDate) {
+        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate);
 
     }
 
@@ -97,7 +93,7 @@ public class JobOfferController {
      * @throws JobOfferIsInactive        the user tried to find a job offer and the applicant is inactive
      */
     @PutMapping("jobOffer/{id}/inactive")
-    public boolean setJobOfferInactive(@PathVariable int id) throws JobOfferNotFoundException, JobOfferIsInactive {
+    public boolean setJobOfferInactive(@PathVariable int id) throws BusinessException {
         return jobOfferService.setJobOfferInactive(id);
     }
 

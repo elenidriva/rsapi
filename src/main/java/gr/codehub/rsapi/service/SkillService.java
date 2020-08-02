@@ -1,6 +1,8 @@
 package gr.codehub.rsapi.service;
 
+
 import gr.codehub.rsapi.dto.SkillDto;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
@@ -24,18 +26,18 @@ public interface SkillService {
     /**
      * Add skill skill.
      *
-     * @param skill the skill
+     * @param skillDto the skill
      * @return the skill
      * @throws SkillCreationException       the skill creation exception
      * @throws SkillNotFoundException       the skill not found exception
      * @throws SkillIsAlreadyExistException the skill is already exist exception
      */
-    Skill addSkill(SkillDto skillDto) throws SkillCreationException, SkillNotFoundException, SkillIsAlreadyExistException;
+    Skill addSkill(SkillDto skillDto) throws BusinessException;
 
 
-    List<Skill> splitSkill(SkillDto skillDto) throws SkillNotFoundException, SkillCreationException, SkillIsAlreadyExistException;
+    List<Skill> splitSkill(SkillDto skillDto) throws BusinessException;
 
-    Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws SkillNotFoundException;
+    Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException;
 
     /**
      * Add skills from reader list.
@@ -45,7 +47,7 @@ public interface SkillService {
      */
     List<Skill> addSkillsFromReader(List<Skill> skills);
 
-    boolean deleteSkill(int skillDtoId) throws  SkillNotFoundException;
+    boolean deleteSkill(int skillDtoId) throws BusinessException;
 
     /**
      * Add applicant skills from reader.
@@ -57,7 +59,7 @@ public interface SkillService {
     /**
      * Add job offer skills from reader.
      *
-     * @param savedJobOffers the saved job offers
+     * @param jobOffers the saved job offers
      */
     void addJobOfferSkillsFromReader(List<JobOffer> jobOffers);
 

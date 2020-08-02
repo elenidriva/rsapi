@@ -18,11 +18,11 @@ public class JobOfferSkill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
     @ToString.Exclude
-    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
     private Skill skill;
 
+    @JsonIgnore
     @ManyToOne
     @ToString.Exclude
     private JobOffer jobOffer;

@@ -3,28 +3,27 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.JobOfferCreationException;
-import gr.codehub.rsapi.exception.JobOfferIsInactive;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.JobOffer;
+import gr.codehub.rsapi.model.JobOfferSkill;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.JobOfferRepository;
 import gr.codehub.rsapi.repository.JobOfferSkillRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.codehub.rsapi.repository.SkillRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class JobOfferServiceImpl implements JobOfferService {
 
-    @Autowired
-    private JobOfferRepository jobOfferRepository;
-    @Autowired
-    private JobOfferSkillRepository jobOfferSkillRepository;
+    private final JobOfferRepository jobOfferRepository;
+    private final JobOfferSkillRepository jobOfferSkillRepository;
+    private final SkillRepository skillRepository;
 
     /**
      * Takes the data from dto and passes the data needed to create the job offer and saves it in the base
@@ -34,7 +33,7 @@ public class JobOfferServiceImpl implements JobOfferService {
      * @throws JobOfferCreationException the user tried to create a job offer without the required fields
      */
     @Override
-    public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException {
+    public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws BusinessException {
         JobOffer jobOffer = new JobOffer();
         if (jobOfferDto == null ||
                 jobOfferDto.getCompany() == null ||
@@ -48,8 +47,31 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOffer.setRegion(jobOfferDto.getRegion());
         jobOffer.setStatus(Status.ACTIVE);
         jobOffer.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
+        jobOffer.setJobOfferDate(LocalDate.now());
 
-        return jobOfferRepository.save(jobOffer);
+        jobOfferRepository.save(jobOffer);
+
+        JobOffer jobFromRep = jobOfferRepository.findById(jobOffer.getId()).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + jobOffer.getId()));
+        JobOfferSkill jobSkill = new JobOfferSkill();
+        jobSkill.setJobOffer(jobFromRep);
+        jobOfferDto.getJobOfferSkillList().forEach(o -> {
+            Skill skillFromDb = skillRepository.findBySkillTitle(o.getSkill().getTitle());
+            if (skillFromDb != null) {
+                jobSkill.setSkill(skillFromDb);
+                jobOfferSkillRepository.save(jobSkill);
+            } else {
+                try {
+                    jobOfferRepository.deleteById(jobOffer.getId());
+                    throw new BusinessException("Please insert a skill that exists in the DB. Your job offer was not created.");
+
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        return jobOffer;
+
     }
 
 
@@ -63,10 +85,10 @@ public class JobOfferServiceImpl implements JobOfferService {
      * @throws JobOfferUpdateException   The user tried to update the job offer but the job offer is inactive
      */
     @Override
-    public JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException {
+    public JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws BusinessException {
         JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferId)
                 .orElseThrow(
-                        () -> new JobOfferNotFoundException("Not such job offer"));
+                        () -> new BusinessException("Not such job offer"));
         if (jobOfferInDb.getStatus() == Status.INACTIVE)
             throw new JobOfferUpdateException("Failed to update Job Offer, because Job is inactive");
         jobOfferInDb.setRegion(jobOfferDto.getRegion());
@@ -92,19 +114,18 @@ public class JobOfferServiceImpl implements JobOfferService {
      * @param positionTitle the title of the job offer position
      * @param region        the region for the job offer
      * @param date          the date that job offer was made
-     * @param skill         which skills the job offer asks for
      * @return a list of job offers based on the criteria that become from the user
      */
     @Override
     public List<JobOffer> findJobOffersByCriteria
-            (String positionTitle, Region region, LocalDate date, Skill skill) {
-        return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date, skill);
+    (String positionTitle, Region region, LocalDate date) {
+        return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date);
     }
 
     /**
      * This method searches the base if there is a job offer with this id and if there is it returns it
      *
-     * @param jobOfferIndex the id of job offer given by the user
+     * @param jobOfferId the id of job offer given by the user
      * @return the job offer based on the id given by the user
      * @throws JobOfferNotFoundException The user tried to find a job offer that does not exist in the data base
      */
@@ -125,8 +146,8 @@ public class JobOfferServiceImpl implements JobOfferService {
      * @throws JobOfferNotFoundException the user tried to find a job offer with id that does not exist
      * @throws JobOfferIsInactive        the user tried to do inactive a job offer that is already inactive
      */
-    public boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive {
-        JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new JobOfferNotFoundException("Cannot find jobOffer with id:" + jobOfferIndex));
+    public boolean setJobOfferInactive(int jobOfferIndex) throws BusinessException {
+        JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new BusinessException("Cannot find jobOffer with id:" + jobOfferIndex));
         JobOffer jobOffer;
         if (jobOfferInDb.getStatus().equals(Status.INACTIVE))
             throw new JobOfferIsInactive("JobOffer with id:" + jobOfferIndex + " is already inactive.");

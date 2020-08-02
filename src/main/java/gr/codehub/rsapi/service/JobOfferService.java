@@ -1,13 +1,8 @@
 package gr.codehub.rsapi.service;
-
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.JobOfferCreationException;
-import gr.codehub.rsapi.exception.JobOfferIsInactive;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.model.JobOffer;
-import gr.codehub.rsapi.model.Skill;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,23 +26,23 @@ public interface JobOfferService {
     /**
      * Update job offer job offer.
      *
-     * @param jobOfferDto   the job offer dto
-     * @param jobOfferIndex the job offer index
+     * @param jobOfferDto the job offer dto
+     * @param jobOfferId  the job offer index
      * @return the job offer
      * @throws JobOfferNotFoundException the job offer not found exception
      * @throws JobOfferUpdateException   the job offer update exception
      */
-    JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException;
+    JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws BusinessException;
 
 
     /**
      * Add job offer job offer.
      *
-     * @param jobOffer the job offer
+     * @param jobOfferDto the job offer
      * @return the job offer
      * @throws JobOfferCreationException the job offer creation exception
      */
-    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException;
+    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws BusinessException;
 
     /**
      * Find job offers by criteria list.
@@ -55,10 +50,9 @@ public interface JobOfferService {
      * @param positionTitle the position title
      * @param region        the region
      * @param date          the date
-     * @param skill         the skill
      * @return the list
      */
-    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date, Skill skill);
+    List<JobOffer> findJobOffersByCriteria(String positionTitle, Region region, LocalDate date);
 
     /**
      * Sets job offer inactive.
@@ -68,7 +62,7 @@ public interface JobOfferService {
      * @throws JobOfferNotFoundException the job offer not found exception
      * @throws JobOfferIsInactive        the job offer is inactive
      */
-    boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive;
+    boolean setJobOfferInactive(int jobOfferIndex) throws BusinessException;
 
 
     /**

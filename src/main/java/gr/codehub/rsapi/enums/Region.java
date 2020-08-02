@@ -38,4 +38,8 @@ public enum Region {
         return Region.findRegionByLocation(location);
     }
 
+    public int getValue() {
+        return value;
+    }
+
 }
