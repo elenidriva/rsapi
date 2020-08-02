@@ -17,6 +17,11 @@ http://localhost:8080/swagger-ui.html
 @EnableSwagger2
 public class SpringFoxConfig {
     @Bean
+    /**
+     * Select() method returns an instance of ApiSelectorBuilder,
+     * which provides a way to control the endpoints exposed by Swagger.
+     * Any() for both will make documentation for the entire API available through Swagger.
+     */
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
