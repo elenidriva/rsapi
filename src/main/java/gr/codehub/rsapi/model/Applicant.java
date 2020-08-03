@@ -20,7 +20,6 @@ import java.util.List;
 @Entity
 public class Applicant {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

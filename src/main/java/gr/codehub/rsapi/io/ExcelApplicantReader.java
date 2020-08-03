@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.io;
 
-import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;

@@ -4,6 +4,7 @@ import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
@@ -11,6 +12,8 @@ import gr.codehub.rsapi.repository.ApplicantRepository;
 import gr.codehub.rsapi.repository.ApplicantSkillRepository;
 import gr.codehub.rsapi.repository.SkillRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +27,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     private final ApplicantSkillRepository applicantSkillRepository;
     private final SkillRepository skillRepository;
     private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
 
     /**
@@ -64,10 +68,12 @@ public class ApplicantServiceImpl implements ApplicantService {
                     applicantRepository.deleteById(applicant.getId());
                     throw new BusinessException("Please insert a skill that exists in the DB. Your applicant profile was not created.");
                 } catch (BusinessException e) {
-                    e.printStackTrace();
+                    logger.info("Successfully add Applicant");
                 }
             }
         });
+
+
         return applicant;
     }
 
@@ -75,6 +81,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         for (ApplicantSkill applicantSkill : applicantSkillList) {
             applicantSkill.setApplicant(applicant);
         }
+        logger.info("Successfully add Skills to applicant");
         return applicantSkillRepository.saveAll(applicantSkillList);
     }
 
@@ -88,7 +95,7 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @throws ApplicantIsInactive        the user tried to do inactive an applicant that is already inactive
      */
     @Override
-    public boolean setApplicantInactive(int applicantIndex) throws BusinessException {
+    public boolean setApplicantInactive(int applicantIndex) throws BusinessException, ApplicantIsInactive {
         Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         Applicant applicant;
         if (applicantInDb.getStatus().equals(Status.INACTIVE))
@@ -97,6 +104,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicant = applicantInDb;
         applicant.setStatus(Status.INACTIVE);
         applicantRepository.save(applicant);
+        logger.info("Successfully setting applicant inactive");
         return true;
     }
 
@@ -110,6 +118,7 @@ public class ApplicantServiceImpl implements ApplicantService {
      */
     @Override
     public Applicant getApplicant(int applicantIndex) throws BusinessException {
+        logger.info("Successfully getting applicant");
         return applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("There is no such Applicant in the DB."));
     }
 
@@ -123,7 +132,7 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @throws ApplicantUpdateException   The user tried to update the applicant but the applicant is inactive
      */
     @Override
-    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws BusinessException {
+    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws BusinessException, ApplicantUpdateException {
 
         Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         if (applicantInDb.getStatus() == Status.INACTIVE)
@@ -138,12 +147,14 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicantInDb.setRegion(applicantDto.getRegion());
 
         applicantRepository.save(applicantInDb);
+        logger.info("Successfully updating applicant");
 
         return applicantInDb;
     }
 
     @Override
     public List<Applicant> getApplicants() {
+        logger.info("Successfully getting list of applicants");
         return applicantRepository.findAll();
     }
 
@@ -160,6 +171,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date) {
 
+        logger.info("Successfully find applicant by criteria");
         return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date);
 
     }
@@ -176,6 +188,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     public boolean deleteApplicant(int applicantIndex) throws BusinessException {
         applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         applicantRepository.deleteById(applicantIndex);
+        logger.info("Successfully delete applicant");
         return true;
     }
 
@@ -192,6 +205,7 @@ public class ApplicantServiceImpl implements ApplicantService {
             skillRepository.save(new Skill(skillInDb.getTitle()));
             return true;
         }
+        logger.info("Successfully insert applicant skill");
         return false;
     }
 
@@ -205,19 +219,23 @@ public class ApplicantServiceImpl implements ApplicantService {
     public void addApplicantSkills(List<Applicant> applicants) {
         for (Applicant applicant : applicants) {
             applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
+            logger.info("Successfully adding applicant skills");
         }
     }
 
     @Override
     public List<Applicant> addApplicants(List<Applicant> applicants) {
+        logger.info("Successfully add applicants");
         return applicantRepository.saveAll(applicants);
     }
 
     @Override
     public Applicant addApplicant(Applicant applicant) {
+        logger.info("Successfully adding applicant");
         return applicantRepository.save(applicant);
     }
 
 
 }
+
 

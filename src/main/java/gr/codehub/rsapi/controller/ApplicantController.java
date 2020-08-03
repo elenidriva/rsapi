@@ -2,74 +2,125 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.ApplicantCreationException;
-import gr.codehub.rsapi.exception.ApplicantIsInactive;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelApplicantReader;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Applicant;
-import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class ApplicantController {
 
-    @Autowired
-    private ApplicantService applicantService;
-    @Autowired
-    private SkillService skillService;
+    private final ApplicantService applicantService;
+    private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
 
+    /**
+     * Provides an endpoint that allows the user to insert an applicant
+     *
+     * @param applicantDto The applicantDto object
+     * @return Applicant  It returns the inserted applicant object
+     * @throws ApplicantCreationException the user tried to add an applicant without the required fields
+     */
     @PostMapping("applicant")
-    public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws ApplicantCreationException {
-
+    public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws BusinessException {
+        logger.info("Add Applicant failed");
         return applicantService.addApplicant(applicantDto);
     }
 
+
+    /**
+     * Endpoint for updating an applicant using applicant`s id
+     *
+     * @param applicantDto gets from the user a dto object
+     * @param id           the id of the applicant
+     * @return json contained the updated applicant
+     * @throws ApplicantNotFoundException the user tried to update an applicant tha does not exists
+     * @throws ApplicantUpdateException   the user tried to update an applicant and the applicant is inactive
+     */
     @PutMapping("applicant/{id}")
-    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws ApplicantNotFoundException, ApplicantUpdateException {
+    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws BusinessException, ApplicantUpdateException {
+        logger.info("Update applicant failed");
         return applicantService.updateApplicant(applicantDto, id);
     }
 
+    /**
+     * Endpoint for finding an applicant using applicant`s id
+     *
+     * @param id the id of the applicant
+     * @return json contained an applicant
+     * @throws ApplicantNotFoundException the user tried to find an applicant that does not exists
+     */
     @GetMapping("applicant/{id}")
-    public Applicant getApplicant(@PathVariable int id) throws ApplicantNotFoundException {
+    public Applicant getApplicant(@PathVariable int id) throws BusinessException {
+        logger.info("Get applicant failed");
         return applicantService.getApplicant(id);
     }
 
+
+    /**
+     * Endpoint for finding an applicant
+     *
+     * @return a list of applicants
+     */
     @GetMapping("applicant")
     public List<Applicant> getApplicants() {
+        logger.info("Get list of applicants");
         return applicantService.getApplicants();
     }
 
+    /**
+     * Endpoint for finding an applicant by criteria
+     *
+     * @param firstName       the first name of the applicant
+     * @param lastName        the last name of the applicant
+     * @param region          the region of the applicant
+     * @param applicationDate the date applicant made the application
+     * @return applicants by criteria
+     */
     @GetMapping("applicant/criteria")
     public List<Applicant> findApplicantsByCriteria(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) LocalDate applicationDate,
-            @RequestParam(required = false) Skill skill) {
-        return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate, skill);
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate applicationDate) {
+        logger.info("List of applicant by criteria");
+        return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate);
     }
 
 
-    @DeleteMapping("applicant/{id}")
-    public boolean deleteApplicant(@PathVariable int id) throws ApplicantNotFoundException {
-        return applicantService.deleteApplicant(id);
-    }
-
+    /**
+     * Endpoint takes the id of an applicant and makes him inactive
+     *
+     * @param id the id of the applicant
+     * @return returns true if it has become inactive false if it has not been
+     * @throws ApplicantNotFoundException the user tried to find an applicant tha does not exist
+     * @throws ApplicantIsInactive        the user tried to find an applicant and the applicant is inactive
+     */
     @PutMapping("applicant/{id}/inactive")
-    public boolean setApplicantInactive(@PathVariable int id) throws ApplicantNotFoundException, ApplicantIsInactive {
+    public boolean setApplicantInactive(@PathVariable int id) throws BusinessException, ApplicantIsInactive {
+        logger.info("Setting applicants inactive");
         return applicantService.setApplicantInactive(id);
     }
 
-
+    /**
+     * Endpoint to read Applicant data from Excel file
+     *
+     * @return returns list of Applicants and save in DB
+     * @throws FileNotFoundException if file did not found
+     */
     @GetMapping(value = "excelApplicants")
     public List<Applicant> addApplicantsFromReaderNew() throws FileNotFoundException {
         ExcelApplicantReader excelApplicantReader = new ExcelApplicantReader();
@@ -77,8 +128,8 @@ public class ApplicantController {
         List<Applicant> savedApplicants = applicantService.addApplicants(applicantList);
         skillService.addApplicantSkillsFromReader(savedApplicants);
         applicantService.addApplicantSkills(savedApplicants);
+        logger.info("Loading excel");
         return savedApplicants;
     }
 
 }
-

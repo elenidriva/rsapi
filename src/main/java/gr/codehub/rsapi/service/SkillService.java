@@ -31,11 +31,23 @@ public interface SkillService {
      * @throws SkillNotFoundException       the skill not found exception
      * @throws SkillIsAlreadyExistException the skill is already exist exception
      */
-    Skill addSkill(SkillDto skillDto) throws BusinessException;
+    Skill addSkill(SkillDto skillDto) throws BusinessException, SkillIsAlreadyExistException, SkillCreationException;
 
 
-    List<Skill> splitSkill(SkillDto skillDto) throws BusinessException;
+    /**
+     * Add split skills
+     *
+     * @param skillDto the skills
+     * @return the list
+     */
+    List<Skill> splitSkill(SkillDto skillDto) throws BusinessException, SkillCreationException;
 
+    /**
+     * Add merging skills
+     *
+     * @param skillDto the skills
+     * @return the list
+     */
     Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException;
 
     /**
@@ -46,6 +58,12 @@ public interface SkillService {
      */
     List<Skill> addSkillsFromReader(List<Skill> skills);
 
+    /**
+     * Add deleting skills
+     *
+     * @param skillDtoId the skills
+     * @return the list
+     */
     boolean deleteSkill(int skillDtoId) throws BusinessException;
 
     /**

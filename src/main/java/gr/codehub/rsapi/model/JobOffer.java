@@ -1,7 +1,5 @@
 package gr.codehub.rsapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
@@ -30,7 +28,6 @@ public class JobOffer {
     private LocalDate jobOfferDate;
 
 
-    private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
     private Status status;
     private Region region;

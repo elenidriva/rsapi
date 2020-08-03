@@ -2,6 +2,8 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.SkillDto;
 import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.SkillCreationException;
+import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
 import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Skill;
@@ -39,7 +41,7 @@ public class SkillController {
      * @return added skill and save it in DB
      */
     @PostMapping(value = "skill")
-    public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException {
+    public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException, SkillIsAlreadyExistException, SkillCreationException {
         logger.info("Adding skills");
         return skillService.addSkill(skillDto);
     }
@@ -52,7 +54,7 @@ public class SkillController {
      * @return added the merged skill and save in DB
      */
     @PostMapping(value = "skillSplit")
-    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException {
+    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException, SkillCreationException {
         logger.info("Splitting skills");
         return skillService.splitSkill(skillDto);
     }
