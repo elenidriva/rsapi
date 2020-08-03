@@ -81,8 +81,9 @@ The system offers statistic results and reporting services, e.g., most requested
 * Java 8+
 * Tomcat - embedded web server
 * Lombok
-* Logger
+* Logging
 * Swagger
+* Postman
 
 ## Setup
 To run this project, you just need to simply download it and import it in a programming environment (i.e. Eclipse IDE for Enterprise Java Developers).
@@ -157,9 +158,10 @@ GO
 
 ## Future improvements & To dos
 * Include a View (front-end with .jsp) in order to complete the MCV pattern and make the web application more user-friendly and complete
-* Include Spring Security for authentication & security purposes
-* Improve performance with multi-threading
-* Split functionality of Applicant and applicant's form
+* Authentication and Authorization
+* Improvement of performance with multi-threading
+* Further separation of concerns
+* Percentage of Partial Match
 
 ### License
 The application is under the MIT license.
