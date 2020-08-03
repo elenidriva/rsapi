@@ -1,75 +1,129 @@
 package gr.codehub.rsapi.controller;
 
-
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.JobOfferCreationException;
-import gr.codehub.rsapi.exception.JobOfferIsInactive;
-import gr.codehub.rsapi.exception.JobOfferNotFoundException;
-import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.io.ExcelJobOfferReader;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.JobOffer;
-import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.JobOfferService;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.codehub.rsapi.service.SkillService;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class JobOfferController {
 
-    /* gia na sundeso to restcontroller (ayta pou fainontai sto xristi--endpoints)
-    me ta services   */
+    private final JobOfferService jobOfferService;
+    private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
-    /* dimiourgo ena pedio ston controller gia na borei na to xrisimopoisei */
-    /* pairno ena joboffer kai to vazo sti vasi */
-    private JobOfferService jobOfferService;
 
-    @Autowired
-    public JobOfferController(JobOfferService jobOfferService) {
-        this.jobOfferService = jobOfferService;
-    }
-
-    // prosthetei ena joboffer
-    @PostMapping("jobOffer") //to string ti patame gia na ginei i entoli
-    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws JobOfferCreationException {
+    /**
+     * Endpoint for adding a job offer
+     *
+     * @param jobOfferDto gets from the user a dto object
+     * @return json contained the added job offer
+     * @throws JobOfferCreationException the user tried to add a job offer without the required fields
+     */
+    @PostMapping("jobOffer")
+    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws BusinessException {
+        logger.info("Add Job Offer");
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
-    /* uloipoisi tou na paro to joboffer vasi enos id */
+    /**
+     * Endpoint for finding a job offer using job offer`s id
+     *
+     * @param id the id of the job offer
+     * @return json contained a job offer
+     * @throws JobOfferNotFoundException  the user tried to find a job offer tha does not exist
+     * @throws ApplicantNotFoundException the user tried to find an applicant tha does not exist
+     */
     @GetMapping("jobOffer/{id}")
     public JobOffer getJobOffer(@PathVariable int id) throws JobOfferNotFoundException {
+        logger.info("Get job Offer");
         return jobOfferService.getJobOffer(id);
     }
 
-    /* pairnei o recruiter to jooffer vasi id kai tou allazei,
-    oi allages pou borei na kanei einai aytes pou anaferontai sto joboffer(columns) */
+    /**
+     * Endpoint for updating a job offer using job offers`s id
+     *
+     * @param jobOfferDto gets from the user a dto object
+     * @param id          the id of the job offer
+     * @return json contained the updated job offer
+     * @throws JobOfferUpdateException   the user tried to update a job offer and the job offer is inactive
+     * @throws JobOfferNotFoundException the user tried to find a job offer and the job offer does not exist
+     */
     @PutMapping("jobOffer/{id}")
-    //to pathvariable simainei oti parino apo to xristi kati
     public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
-            throws JobOfferUpdateException, JobOfferNotFoundException {
+            throws BusinessException {
+        logger.info("Update job Offer");
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
-    @GetMapping("jobOffer") // end point, verb, parameters if they exist
+    @GetMapping("jobOffer")
     public List<JobOffer> getJobOffers() {
+        logger.info("List getting  job Offers");
         return jobOfferService.getJobOffers();
     }
 
+    /**
+     * Endpoint for finding a job offer by criteria
+     *
+     * @param positionTitle the title of the job offer
+     * @param region        the region of the job offer
+     * @param jobOfferDate  the date job offer was made
+     * @return applicants by job offer
+     */
     @GetMapping("jobOffer/criteria")
     public List<JobOffer> findJobOffersByCriteria(
             @RequestParam(required = false) String positionTitle,
             @RequestParam(required = false) Region region,
-            @RequestParam(required = false) LocalDate jobOfferDate,
-            @RequestParam(required = false) Skill skill) {
-        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate, skill);
+            @RequestParam(required = false) LocalDate jobOfferDate) {
+        logger.info("Find by criteria Job Offer");
+        return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate);
 
     }
 
+    /**
+     * Endpoint takes the id of a job offer and makes it inactive
+     *
+     * @param id the id of the job offer
+     * @return returns true if it has become inactive false if it has not
+     * @throws JobOfferNotFoundException the user tried to find a job offer tha does not exist
+     * @throws JobOfferIsInactive        the user tried to find a job offer and the applicant is inactive
+     */
     @PutMapping("jobOffer/{id}/inactive")
-    public boolean setJobOfferInactive(@PathVariable int id) throws JobOfferNotFoundException, JobOfferIsInactive {
+    public boolean setJobOfferInactive(@PathVariable int id) throws BusinessException {
+        logger.info("Setting inactive job offers");
         return jobOfferService.setJobOfferInactive(id);
     }
 
+    /**
+     * Endpoint to read JobOffer data from Excel file
+     *
+     * @return returns list of JobOffers and save in DB
+     * @throws FileNotFoundException if file did not found
+     */
+    @GetMapping(value = "excelJobOffer")
+    public List<JobOffer> addJobOfferFromExcel() throws FileNotFoundException {
+        ExcelJobOfferReader excelJobOfferReader = new ExcelJobOfferReader();
+        List<JobOffer> jobOfferList = excelJobOfferReader.readFromExcel();
+        List<JobOffer> savedJobOffers = jobOfferService.addJobOffers(jobOfferList);
+        skillService.addJobOfferSkillsFromReader(savedJobOffers);
+        jobOfferService.addJobOfferSkills(savedJobOffers);
+        System.out.println(savedJobOffers);
+        logger.info("Import data");
+        return savedJobOffers;
+    }
+
 }
+

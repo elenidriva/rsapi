@@ -1,11 +1,14 @@
 package gr.codehub.rsapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import gr.codehub.rsapi.enums.DegreeLevel;
 import gr.codehub.rsapi.enums.ExperienceLevel;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -27,11 +30,13 @@ public class JobOffer {
     private LocalDate jobOfferDate;
 
 
+    private DegreeLevel degreeLevel;
     private ExperienceLevel experienceLevel;
     private Status status;
     private Region region;
 
     @OneToMany(mappedBy = "jobOffer")
+    @ToString.Exclude
     private List<JobOfferSkill> jobOfferSkillList;
 
 

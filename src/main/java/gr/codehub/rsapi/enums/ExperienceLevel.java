@@ -7,14 +7,20 @@ public enum ExperienceLevel {
     SENIOR(3, "Senior");
 
 
-    private int value;
-    private String expLevel;
+    private final int value;
+    private final String expLevel;
 
-    ExperienceLevel(int value, String expLevel ) {
+    ExperienceLevel(int value, String expLevel) {
         this.value = value;
         this.expLevel = expLevel;
     }
 
+    /**
+     * This method takes each exp level, takes the value(int) and sees if it is the same
+     *
+     * @param expLevel to be able to do matching with the strings and values
+     * @return the experience level to match
+     */
     public static ExperienceLevel findDExpLevel(String expLevel) {
         for (ExperienceLevel experienceLevel : ExperienceLevel.values()) {
             if (experienceLevel.expLevel.equals(expLevel))

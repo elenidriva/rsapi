@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -18,7 +17,6 @@ public class JobOfferDto {
 
     private String positionTitle;
     private String company;
-    //private LocalDate jobOfferDate;
     private ExperienceLevel experienceLevel;
     private Status status;
     private Region region;
