@@ -4,6 +4,7 @@ import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.JobOfferSkill;
 import gr.codehub.rsapi.model.Skill;
@@ -11,6 +12,8 @@ import gr.codehub.rsapi.repository.JobOfferRepository;
 import gr.codehub.rsapi.repository.JobOfferSkillRepository;
 import gr.codehub.rsapi.repository.SkillRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +27,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     private final JobOfferRepository jobOfferRepository;
     private final JobOfferSkillRepository jobOfferSkillRepository;
     private final SkillRepository skillRepository;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
     /**
      * Takes the data from dto and passes the data needed to create the job offer and saves it in the base
@@ -65,7 +69,7 @@ public class JobOfferServiceImpl implements JobOfferService {
                     throw new BusinessException("Please insert a skill that exists in the DB. Your job offer was not created.");
 
                 } catch (BusinessException e) {
-                    e.printStackTrace();
+                    logger.info("Successfully add Job Offer");
                 }
 
             }
@@ -96,14 +100,14 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOfferInDb.setPositionTitle(jobOfferDto.getPositionTitle());
         jobOfferInDb.setCompany(jobOfferDto.getCompany());
         jobOfferInDb.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
-
+        logger.info("Successfully update Job Offer");
         return jobOfferRepository.save(jobOfferInDb);
     }
 
 
     @Override
     public List<JobOffer> getJobOffers() {
-
+        logger.info("Successfully list  Job Offers");
         return jobOfferRepository.findAll();
     }
 
@@ -119,6 +123,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Override
     public List<JobOffer> findJobOffersByCriteria
     (String positionTitle, Region region, LocalDate date) {
+        logger.info("Successfully adding job offer by criteria");
         return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date);
     }
 
@@ -133,7 +138,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     public JobOffer getJobOffer(int jobOfferId) {
         Optional<JobOffer> jobOfferInDbOptional = jobOfferRepository.findById(jobOfferId);
         JobOffer jobOfferInDb = jobOfferInDbOptional.get();
-
+        logger.info("Successfully getting job offer by id");
         return jobOfferInDb;
     }
 
@@ -155,6 +160,7 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOffer = jobOfferInDb;
         jobOffer.setStatus(Status.INACTIVE);
         jobOfferRepository.save(jobOffer);
+        logger.info("Successfully setting Job Offer inactive");
         return true;
     }
 
@@ -163,10 +169,12 @@ public class JobOfferServiceImpl implements JobOfferService {
         for (JobOffer jobOffer : jobOffers) {
             jobOfferSkillRepository.saveAll(jobOffer.getJobOfferSkillList());
         }
+        logger.info("Successfully adding Job Offer skills");
     }
 
     @Override
     public List<JobOffer> addJobOffers(List<JobOffer> jobOffers) {
+        logger.info("Successfully add Job Offers");
         return jobOfferRepository.saveAll(jobOffers);
     }
 

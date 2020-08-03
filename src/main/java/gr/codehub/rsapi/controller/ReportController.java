@@ -2,8 +2,11 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.OfferedRequestedDto;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.service.ReportService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +17,7 @@ import java.util.List;
 public class ReportController {
 
     private ReportService reportService;
-
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
     /**
      * Endpoint get the 20 most requested matches (reporting)

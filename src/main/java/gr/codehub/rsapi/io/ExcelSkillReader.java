@@ -1,7 +1,6 @@
 package gr.codehub.rsapi.io;
 
 import gr.codehub.rsapi.model.Skill;
-import gr.codehub.rsapi.utility.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -24,7 +23,7 @@ public class ExcelSkillReader implements Reader<Skill> {
      * @thows FileNotFoundException
      */
     public List<Skill> readFromExcel() throws FileNotFoundException {
-        Logger.log("Read Skills from Given Excel File");
+
 
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<Skill> skills = new ArrayList<>();

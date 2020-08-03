@@ -3,9 +3,12 @@ package gr.codehub.rsapi.controller;
 import gr.codehub.rsapi.dto.SkillDto;
 import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
@@ -16,6 +19,7 @@ import java.util.List;
 public class SkillController {
 
     private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
     /**
      * Endpoint for finding Skill list
@@ -24,6 +28,7 @@ public class SkillController {
      */
     @GetMapping(value = "skill")
     public List<Skill> getSkills() {
+        logger.info("Getting skills");
         return skillService.getSkills();
     }
 
@@ -35,6 +40,7 @@ public class SkillController {
      */
     @PostMapping(value = "skill")
     public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException {
+        logger.info("Adding skills");
         return skillService.addSkill(skillDto);
     }
 
@@ -47,6 +53,7 @@ public class SkillController {
      */
     @PostMapping(value = "skillSplit")
     public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException {
+        logger.info("Splitting skills");
         return skillService.splitSkill(skillDto);
     }
 
@@ -59,6 +66,7 @@ public class SkillController {
      */
     @PostMapping(value = "skillsMerge")
     public Skill mergeSkills(@RequestParam String skillTitle1, @RequestParam String skillTitle2) throws BusinessException {
+        logger.info("Merging skills");
         return skillService.mergeSkills(new SkillDto(skillTitle1), new SkillDto(skillTitle2));
     }
 
@@ -72,6 +80,7 @@ public class SkillController {
     public List<Skill> addSkillsFromReader() throws FileNotFoundException {
         ExcelSkillReader excelSkillReader = new ExcelSkillReader();
         List<Skill> skills = excelSkillReader.readFromExcel();
+        logger.info("Import skills");
         return skillService.addSkillsFromReader(skills);
     }
 

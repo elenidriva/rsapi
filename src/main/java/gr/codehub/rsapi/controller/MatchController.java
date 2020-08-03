@@ -3,9 +3,12 @@ package gr.codehub.rsapi.controller;
 import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
 import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,7 @@ import java.util.List;
 public class MatchController {
 
     MatchService matchService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
 
     /**
@@ -28,6 +32,7 @@ public class MatchController {
      */
     @DeleteMapping("match/{id}")
     public Match deleteMatch(@PathVariable int matchId) throws BusinessException {
+        logger.info("Delete matches");
         return matchService.deleteMatch(matchId);
     }
 
@@ -38,6 +43,8 @@ public class MatchController {
      */
     @GetMapping("getMostRecentFinalisedMatches")
     public List<Match> getMostRecentFinalisedMatches() {
+
+        logger.info("Getting most recent finalized");
         return matchService.getMostRecentFinalisedMatches();
     }
 
@@ -50,6 +57,7 @@ public class MatchController {
      */
     @PutMapping("match")
     public Match finaliseMatch(@RequestParam int matchId) throws BusinessException {
+        logger.info("Getting finalized matches");
         return matchService.finaliseMatch(matchId);
 
     }
@@ -65,6 +73,7 @@ public class MatchController {
     @PostMapping("match")
     public Match createManualMatch(@RequestParam int applicantId,
                                    @RequestParam int jobOfferId) throws BusinessException {
+        logger.info("Create manual matches");
         return matchService.createManualMatch(applicantId, jobOfferId);
     }
 
@@ -75,6 +84,7 @@ public class MatchController {
      */
     @GetMapping("partialMatches")
     public List<JobOffersApplicantsDto> findPartialMatches() {
+        logger.info("Find partial matches ");
         return matchService.findPartialMatches();
     }
 
@@ -85,6 +95,7 @@ public class MatchController {
      */
     @GetMapping("fullMatch")
     public List<FullMatchDto> findFullMatches() {
+        logger.info("Find full matches");
         return matchService.findFullMatches();
 
     }
@@ -99,6 +110,7 @@ public class MatchController {
     public List<Match> getFinalisedfMatchesWithDateRange(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws BusinessException {
+        logger.info("Find full matches");
         return matchService.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
 
@@ -111,6 +123,7 @@ public class MatchController {
      */
     @GetMapping("check")
     public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws BusinessException {
+        logger.info("Checking Duplicates");
         return matchService.checkForDuplicate(applicantIndex, jobOfferIndex);
 
     }
@@ -122,6 +135,7 @@ public class MatchController {
      */
     @GetMapping("proposed")
     public List<Match> getProposedMatches() {
+        logger.info("Getting proposed matches");
         return matchService.getProposedMatches();
 
     }

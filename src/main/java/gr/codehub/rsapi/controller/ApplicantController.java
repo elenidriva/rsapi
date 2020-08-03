@@ -4,10 +4,13 @@ import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelApplicantReader;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,7 @@ public class ApplicantController {
 
     private final ApplicantService applicantService;
     private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
 
     /**
@@ -32,7 +36,7 @@ public class ApplicantController {
      */
     @PostMapping("applicant")
     public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws BusinessException {
-
+        logger.info("Add Applicant failed");
         return applicantService.addApplicant(applicantDto);
     }
 
@@ -48,6 +52,7 @@ public class ApplicantController {
      */
     @PutMapping("applicant/{id}")
     public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws BusinessException {
+        logger.info("Update applicant failed");
         return applicantService.updateApplicant(applicantDto, id);
     }
 
@@ -60,6 +65,7 @@ public class ApplicantController {
      */
     @GetMapping("applicant/{id}")
     public Applicant getApplicant(@PathVariable int id) throws BusinessException {
+        logger.info("Get applicant failed");
         return applicantService.getApplicant(id);
     }
 
@@ -71,6 +77,7 @@ public class ApplicantController {
      */
     @GetMapping("applicant")
     public List<Applicant> getApplicants() {
+        logger.info("Get list of applicants");
         return applicantService.getApplicants();
     }
 
@@ -89,6 +96,7 @@ public class ApplicantController {
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate applicationDate) {
+        logger.info("List of applicant by criteria");
         return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate);
     }
 
@@ -103,6 +111,7 @@ public class ApplicantController {
      */
     @PutMapping("applicant/{id}/inactive")
     public boolean setApplicantInactive(@PathVariable int id) throws BusinessException {
+        logger.info("Setting applicants inactive");
         return applicantService.setApplicantInactive(id);
     }
 
@@ -119,6 +128,7 @@ public class ApplicantController {
         List<Applicant> savedApplicants = applicantService.addApplicants(applicantList);
         skillService.addApplicantSkillsFromReader(savedApplicants);
         applicantService.addApplicantSkills(savedApplicants);
+        logger.info("Loading excel");
         return savedApplicants;
     }
 

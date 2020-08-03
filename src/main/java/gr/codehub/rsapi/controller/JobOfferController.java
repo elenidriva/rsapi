@@ -4,10 +4,13 @@ import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.exception.*;
 import gr.codehub.rsapi.io.ExcelJobOfferReader;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.service.JobOfferService;
 import gr.codehub.rsapi.service.SkillService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
@@ -20,6 +23,7 @@ public class JobOfferController {
 
     private final JobOfferService jobOfferService;
     private final SkillService skillService;
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
 
     /**
@@ -31,6 +35,7 @@ public class JobOfferController {
      */
     @PostMapping("jobOffer")
     public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws BusinessException {
+        logger.info("Add Job Offer");
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
@@ -44,6 +49,7 @@ public class JobOfferController {
      */
     @GetMapping("jobOffer/{id}")
     public JobOffer getJobOffer(@PathVariable int id) throws JobOfferNotFoundException {
+        logger.info("Get job Offer");
         return jobOfferService.getJobOffer(id);
     }
 
@@ -59,11 +65,13 @@ public class JobOfferController {
     @PutMapping("jobOffer/{id}")
     public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
             throws BusinessException {
+        logger.info("Update job Offer");
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
     @GetMapping("jobOffer")
     public List<JobOffer> getJobOffers() {
+        logger.info("List getting  job Offers");
         return jobOfferService.getJobOffers();
     }
 
@@ -80,6 +88,7 @@ public class JobOfferController {
             @RequestParam(required = false) String positionTitle,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) LocalDate jobOfferDate) {
+        logger.info("Find by criteria Job Offer");
         return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate);
 
     }
@@ -94,6 +103,7 @@ public class JobOfferController {
      */
     @PutMapping("jobOffer/{id}/inactive")
     public boolean setJobOfferInactive(@PathVariable int id) throws BusinessException {
+        logger.info("Setting inactive job offers");
         return jobOfferService.setJobOfferInactive(id);
     }
 
@@ -111,6 +121,7 @@ public class JobOfferController {
         skillService.addJobOfferSkillsFromReader(savedJobOffers);
         jobOfferService.addJobOfferSkills(savedJobOffers);
         System.out.println(savedJobOffers);
+        logger.info("Import data");
         return savedJobOffers;
     }
 

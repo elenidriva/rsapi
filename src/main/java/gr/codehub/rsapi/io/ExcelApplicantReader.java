@@ -7,7 +7,6 @@ import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
-import gr.codehub.rsapi.utility.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -34,7 +33,6 @@ public class ExcelApplicantReader implements Reader<Applicant> {
      */
     @Override
     public List<Applicant> readFromExcel() throws FileNotFoundException {
-        Logger.log("Read Applicants from Given Excel File");
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<Applicant> applicantList = new ArrayList<>();
         try {

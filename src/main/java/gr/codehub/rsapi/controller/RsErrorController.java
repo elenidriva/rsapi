@@ -1,9 +1,12 @@
 package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.logging.SLF4JExample;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 public class RsErrorController implements ErrorController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
+
     @RequestMapping("error")
     @ResponseBody
     public ErrorDetails handleError(HttpServletRequest request) {

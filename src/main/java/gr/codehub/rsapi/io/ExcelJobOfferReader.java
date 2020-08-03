@@ -6,7 +6,6 @@ import gr.codehub.rsapi.enums.Status;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.JobOfferSkill;
 import gr.codehub.rsapi.model.Skill;
-import gr.codehub.rsapi.utility.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -31,7 +30,7 @@ public class ExcelJobOfferReader implements Reader<JobOffer> {
      */
     @Override
     public List<JobOffer> readFromExcel() throws FileNotFoundException {
-        Logger.log("Read JobOffers from Given Excel File");
+
         FileInputStream data = new FileInputStream(new File("datarsapi.xlsx"));
         List<JobOffer> jobOfferList = new ArrayList<>();
         try {
