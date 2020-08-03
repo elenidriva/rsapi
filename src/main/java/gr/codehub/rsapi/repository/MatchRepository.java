@@ -1,4 +1,5 @@
 package gr.codehub.rsapi.repository;
+
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;

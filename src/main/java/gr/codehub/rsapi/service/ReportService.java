@@ -1,6 +1,5 @@
 package gr.codehub.rsapi.service;
 
-
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.OfferedRequestedDto;
 

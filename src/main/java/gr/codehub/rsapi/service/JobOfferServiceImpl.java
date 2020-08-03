@@ -10,6 +10,7 @@ import gr.codehub.rsapi.exception.JobOfferUpdateException;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.JobOfferRepository;
+import gr.codehub.rsapi.repository.JobOfferSkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +18,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * ayta pou borei na xrisimopoiei o pelatis
- **/
 @Service
 public class JobOfferServiceImpl implements JobOfferService {
 
-    /**
-     * to autowired sundeei to repository sto service
-     **/
     @Autowired
     private JobOfferRepository jobOfferRepository;
+    @Autowired
+    private JobOfferSkillRepository jobOfferSkillRepository;
 
     @Override
     public JobOffer addJobOffer(JobOfferDto jobOfferDto) throws JobOfferCreationException {
@@ -48,10 +45,6 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.save(jobOffer);
     }
 
-    /**
-     * gurnao to apotelesma se optional kai apo to optional pairno to joboffer
-     * kai kano to update pou thelo kai meta to sozo sto database
-     **/
 
     @Override
     public JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws JobOfferNotFoundException, JobOfferUpdateException {
@@ -64,24 +57,10 @@ public class JobOfferServiceImpl implements JobOfferService {
         jobOfferInDb.setExperienceLevel(jobOfferDto.getExperienceLevel());
         jobOfferInDb.setPositionTitle(jobOfferDto.getPositionTitle());
         jobOfferInDb.setCompany(jobOfferDto.getCompany());
-        // allazei to status kai ginetai update to joboffer opos kai pano
-        // jobOfferInDb.setStatus(jobOfferDto.getStatus());
         jobOfferInDb.setJobOfferSkillList(jobOfferDto.getJobOfferSkillList());
 
         return jobOfferRepository.save(jobOfferInDb);
-//        if (jobOfferInDb.getStatus() == Status.INACTIVE) {
-//            jobOfferInDb.setStatus(Status.ACTIVE);
-//        } else {
-//            jobOfferInDb.setStatus(Status.INACTIVE);
-//        }
-//        return jobOfferRepository.save(jobOfferInDb);
     }
-
-    /** allazo to status, thelei exception gia to active **/
-    /**
-     * to statusIndex einai to id enos joboffer to opoio vazei o xristis
-     * elegxei an uparxei to
-     **/
 
 
     @Override
@@ -90,14 +69,12 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.findAll();
     }
 
-    /* epistrfei lista me ta job offers vasi ton kritirion pou dinei */
     @Override
     public List<JobOffer> findJobOffersByCriteria
-    (String positionTitle, Region region, LocalDate date, Skill skill) {
+            (String positionTitle, Region region, LocalDate date, Skill skill) {
         return jobOfferRepository.findJobOffersByCriteria(positionTitle, region, date, skill);
     }
 
-    // epistrefei to joboffer me to sugkekrimeno id
     @Override
     public JobOffer getJobOffer(int jobOfferId) {
         Optional<JobOffer> jobOfferInDbOptional = jobOfferRepository.findById(jobOfferId);
@@ -105,7 +82,6 @@ public class JobOfferServiceImpl implements JobOfferService {
 
         return jobOfferInDb;
     }
-
 
     public boolean setJobOfferInactive(int jobOfferIndex) throws JobOfferNotFoundException, JobOfferIsInactive {
         JobOffer jobOfferInDb = jobOfferRepository.findById(jobOfferIndex).orElseThrow(() -> new JobOfferNotFoundException("Cannot find jobOffer with id:" + jobOfferIndex));
@@ -119,5 +95,16 @@ public class JobOfferServiceImpl implements JobOfferService {
         return true;
     }
 
+    @Override
+    public void addJobOfferSkills(List<JobOffer> jobOffers) {
+        for (JobOffer jobOffer : jobOffers) {
+            jobOfferSkillRepository.saveAll(jobOffer.getJobOfferSkillList());
+        }
+    }
+
+    @Override
+    public List<JobOffer> addJobOffers(List<JobOffer> jobOffers) {
+        return jobOfferRepository.saveAll(jobOffers);
+    }
 
 }
