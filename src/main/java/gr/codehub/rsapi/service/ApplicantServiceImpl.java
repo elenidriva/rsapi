@@ -3,32 +3,44 @@ package gr.codehub.rsapi.service;
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.*;
-import gr.codehub.rsapi.logging.SLF4JExample;
+import gr.codehub.rsapi.exception.ApplicantCreationException;
+import gr.codehub.rsapi.exception.ApplicantIsInactive;
+import gr.codehub.rsapi.exception.ApplicantNotFoundException;
+import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.ApplicantRepository;
 import gr.codehub.rsapi.repository.ApplicantSkillRepository;
 import gr.codehub.rsapi.repository.SkillRepository;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
-@AllArgsConstructor
+/*
+* *
+TODO:
+* 1. Exception Error Codes in Separate File
+* 2. Declarative Errors
+* 3. Separation of Concerns - Handlers Services etc
+* 4. Deprecated methods
+* 5.addApplicant logic when insufficient data
+* 6. Fix JavaDocs
+ * */
+/**
+ * ApplicantServiceImpl: Responsible for handling the Applicant related functions
+ */
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
     private final ApplicantSkillRepository applicantSkillRepository;
     private final SkillRepository skillRepository;
-    private final SkillService skillService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
-
 
     /**
      * This method takes the data from dto and passes the data needed to create the applicant and saves it in the base
@@ -39,21 +51,19 @@ public class ApplicantServiceImpl implements ApplicantService {
      */
     @Override
     public Applicant addApplicant(ApplicantDto applicantDto) throws BusinessException {
-        Applicant applicant = new Applicant();
         if (applicantDto == null) throw new ApplicantCreationException("You did not add any of the required fields");
-
-        applicant.setFirstName(applicantDto.getFirstName());
-        applicant.setLastName(applicantDto.getLastName());
-        applicant.setAddress(applicantDto.getAddress());
-        applicant.setRegion(applicantDto.getRegion());
-        applicant.setExperienceLevel(applicantDto.getExperienceLevel());
-        applicant.setDegreeLevel(applicantDto.getDegreeLevel());
-        applicant.setApplicantSkillList(applicantDto.getApplicantSkillList());
-        applicant.setApplicationDate(LocalDate.now());
-        applicant.setStatus(Status.ACTIVE);
-
+        Applicant applicant = Applicant.builder()
+                .firstName(applicantDto.getFirstName())
+                .lastName(applicantDto.getLastName())
+                .address(applicantDto.getAddress())
+                .region(applicantDto.getRegion())
+                .experienceLevel(applicantDto.getExperienceLevel())
+                .degreeLevel(applicantDto.getDegreeLevel())
+                .applicantSkillList(applicantDto.getApplicantSkillList())
+                .applicationDate(LocalDate.now())
+                .status(Status.ACTIVE)
+                .build();
         applicantRepository.save(applicant);
-        System.out.println(applicant.getId());
 
         Applicant applFromRep = applicantRepository.findById(applicant.getId()).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicant.getId()));
         ApplicantSkill appSkill = new ApplicantSkill();
@@ -68,20 +78,19 @@ public class ApplicantServiceImpl implements ApplicantService {
                     applicantRepository.deleteById(applicant.getId());
                     throw new BusinessException("Please insert a skill that exists in the DB. Your applicant profile was not created.");
                 } catch (BusinessException e) {
-                    logger.info("Successfully add Applicant");
+                    log.info("Successfully add Applicant");
                 }
             }
         });
-
-
         return applicant;
     }
 
+    @Deprecated
     public List<ApplicantSkill> addAppSkillToApplicant(List<ApplicantSkill> applicantSkillList, Applicant applicant) {
         for (ApplicantSkill applicantSkill : applicantSkillList) {
             applicantSkill.setApplicant(applicant);
         }
-        logger.info("Successfully add Skills to applicant");
+        log.info("Successfully add Skills to applicant");
         return applicantSkillRepository.saveAll(applicantSkillList);
     }
 
@@ -104,7 +113,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicant = applicantInDb;
         applicant.setStatus(Status.INACTIVE);
         applicantRepository.save(applicant);
-        logger.info("Successfully setting applicant inactive");
+        log.info("Successfully setting applicant inactive");
         return true;
     }
 
@@ -118,7 +127,7 @@ public class ApplicantServiceImpl implements ApplicantService {
      */
     @Override
     public Applicant getApplicant(int applicantIndex) throws BusinessException {
-        logger.info("Successfully getting applicant");
+        log.info("Successfully getting applicant");
         return applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("There is no such Applicant in the DB."));
     }
 
@@ -147,14 +156,14 @@ public class ApplicantServiceImpl implements ApplicantService {
         applicantInDb.setRegion(applicantDto.getRegion());
 
         applicantRepository.save(applicantInDb);
-        logger.info("Successfully updating applicant");
+        log.info("Successfully updating applicant");
 
         return applicantInDb;
     }
 
     @Override
     public List<Applicant> getApplicants() {
-        logger.info("Successfully getting list of applicants");
+        log.info("Successfully getting list of applicants");
         return applicantRepository.findAll();
     }
 
@@ -171,7 +180,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date) {
 
-        logger.info("Successfully find applicant by criteria");
+        log.info("Successfully find applicant by criteria");
         return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date);
 
     }
@@ -188,7 +197,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     public boolean deleteApplicant(int applicantIndex) throws BusinessException {
         applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
         applicantRepository.deleteById(applicantIndex);
-        logger.info("Successfully delete applicant");
+        log.info("Successfully delete applicant");
         return true;
     }
 
@@ -205,7 +214,7 @@ public class ApplicantServiceImpl implements ApplicantService {
             skillRepository.save(new Skill(skillInDb.getTitle()));
             return true;
         }
-        logger.info("Successfully insert applicant skill");
+        log.info("Successfully insert applicant skill");
         return false;
     }
 
@@ -219,23 +228,20 @@ public class ApplicantServiceImpl implements ApplicantService {
     public void addApplicantSkills(List<Applicant> applicants) {
         for (Applicant applicant : applicants) {
             applicantSkillRepository.saveAll(applicant.getApplicantSkillList());
-            logger.info("Successfully adding applicant skills");
+            log.info("Successfully adding applicant skills");
         }
     }
 
     @Override
     public List<Applicant> addApplicants(List<Applicant> applicants) {
-        logger.info("Successfully add applicants");
+        log.info("Successfully add applicants");
         return applicantRepository.saveAll(applicants);
     }
 
     @Override
     public Applicant addApplicant(Applicant applicant) {
-        logger.info("Successfully adding applicant");
+        log.info("Successfully adding applicant");
         return applicantRepository.save(applicant);
     }
 
-
 }
-
-
