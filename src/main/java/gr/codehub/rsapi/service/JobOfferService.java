@@ -2,7 +2,11 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.JobOfferCreationException;
+import gr.codehub.rsapi.exception.JobOfferIsInactive;
+import gr.codehub.rsapi.exception.JobOfferNotFoundException;
+import gr.codehub.rsapi.exception.JobOfferUpdateException;
 import gr.codehub.rsapi.model.JobOffer;
 
 import java.time.LocalDate;

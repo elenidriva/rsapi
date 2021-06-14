@@ -2,7 +2,11 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.ApplicantCreationException;
+import gr.codehub.rsapi.exception.ApplicantIsInactive;
+import gr.codehub.rsapi.exception.ApplicantNotFoundException;
+import gr.codehub.rsapi.exception.ApplicantUpdateException;
+import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.model.Applicant;
 
 import java.time.LocalDate;
