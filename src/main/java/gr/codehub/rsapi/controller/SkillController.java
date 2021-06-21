@@ -1,36 +1,35 @@
 package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.io.ExcelSkillReader;
-import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.service.SkillService;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
+@RequiredArgsConstructor
+@RestController("skill")
 public class SkillController {
 
     private final SkillService skillService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
     /**
      * Endpoint for finding Skill list
      *
      * @return a list of skills
      */
-    @GetMapping(value = "skill")
+    @GetMapping
     public List<Skill> getSkills() {
-        logger.info("Getting skills");
         return skillService.getSkills();
     }
 
@@ -40,9 +39,8 @@ public class SkillController {
      * @param skillDto
      * @return added skill and save it in DB
      */
-    @PostMapping(value = "skill")
-    public Skill addSkill(@RequestBody SkillDto skillDto) throws BusinessException, SkillIsAlreadyExistException, SkillCreationException {
-        logger.info("Adding skills");
+    @PostMapping
+    public Skill addSkill(@RequestBody SkillDto skillDto) throws RCMRuntimeException, SkillIsAlreadyExistException, SkillCreationException {
         return skillService.addSkill(skillDto);
     }
 
@@ -53,9 +51,8 @@ public class SkillController {
      * @param skillDto
      * @return added the merged skill and save in DB
      */
-    @PostMapping(value = "skillSplit")
-    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws BusinessException, SkillCreationException {
-        logger.info("Splitting skills");
+    @PostMapping(value = "/split")
+    public List<Skill> splitSkill(@RequestBody SkillDto skillDto) throws RCMRuntimeException, SkillCreationException {
         return skillService.splitSkill(skillDto);
     }
 
@@ -63,12 +60,12 @@ public class SkillController {
      * Endpoint to merge skill from given skill list
      *
      * @param skillTitle1
-     * @param  skillTitle2
+     * @param skillTitle2
      * @return added the merged skill and save in DB
      */
-    @PostMapping(value = "skillsMerge")
-    public Skill mergeSkills(@RequestParam String skillTitle1, @RequestParam String skillTitle2) throws BusinessException {
-        logger.info("Merging skills");
+    @PostMapping(value = "/merge")
+    public Skill mergeSkills(@RequestParam String skillTitle1,
+                             @RequestParam String skillTitle2) throws RCMRuntimeException {
         return skillService.mergeSkills(new SkillDto(skillTitle1), new SkillDto(skillTitle2));
     }
 
@@ -78,11 +75,10 @@ public class SkillController {
      * @return returns list of Skills and save in DB
      * @throws FileNotFoundException if file did not found
      */
-    @GetMapping(value = "insertSkillsFromExcel")
+    @GetMapping(value = "/insertFromExcel")
     public List<Skill> addSkillsFromReader() throws FileNotFoundException {
         ExcelSkillReader excelSkillReader = new ExcelSkillReader();
         List<Skill> skills = excelSkillReader.readFromExcel();
-        logger.info("Import skills");
         return skillService.addSkillsFromReader(skills);
     }
 

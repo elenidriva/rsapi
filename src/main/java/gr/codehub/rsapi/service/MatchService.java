@@ -2,7 +2,7 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
-import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.model.Match;
 
 import java.time.LocalDate;
@@ -18,36 +18,36 @@ public interface MatchService {
      *
      * @param applicantIndex, jobOfferIndex
      * @return Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    Match createManualMatch(int applicantIndex, int jobOfferIndex) throws BusinessException;
+    Match createManualMatch(int applicantIndex, int jobOfferIndex) throws RCMRuntimeException;
 
     /**
      * Create a finalize match
      *
      * @param matchIndex
      * @return Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    Match finaliseMatch(int matchIndex) throws BusinessException;
+    Match finaliseMatch(int matchIndex) throws RCMRuntimeException;
 
     /**
      * Delete a given match
      *
      * @param matchIndex
      * @return Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    Match deleteMatch(int matchIndex) throws BusinessException;
+    Match deleteMatch(int matchIndex) throws RCMRuntimeException;
 
     /**
      * Checking Duplicates of a given applicantId and JobOfferId
      *
      * @param applicantIndex, jobOfferIndex
      * @return Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) throws BusinessException;
+    boolean checkForDuplicate(int applicantIndex, int jobOfferIndex) throws RCMRuntimeException;
 
 
     /**
@@ -77,18 +77,18 @@ public interface MatchService {
      *
      * @param startDate, endDate
      * @return list of Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) throws BusinessException;
+    List<Match> getFinalisedfMatchesWithDateRange(LocalDate startDate, LocalDate endDate) throws RCMRuntimeException;
 
     /**
      * Insert a new match
      *
      * @param applicantIndex, jobOfferIndex
      * @return Match
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    Match insertMatch(int applicantIndex, int jobOfferIndex) throws BusinessException;
+    Match insertMatch(int applicantIndex, int jobOfferIndex) throws RCMRuntimeException;
 
     /**
      * Get the 20 proposed matches

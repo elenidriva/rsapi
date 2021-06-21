@@ -1,28 +1,30 @@
 package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
-import gr.codehub.rsapi.logging.SLF4JExample;
-import gr.codehub.rsapi.model.*;
+import gr.codehub.rsapi.model.Applicant;
+import gr.codehub.rsapi.model.ApplicantSkill;
+import gr.codehub.rsapi.model.JobOffer;
+import gr.codehub.rsapi.model.JobOfferSkill;
+import gr.codehub.rsapi.model.Skill;
 import gr.codehub.rsapi.repository.SkillRepository;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class SkillServiceImpl implements SkillService {
 
     private final SkillRepository skillRepository;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
 
     /**
      * Gets skills.
@@ -31,7 +33,7 @@ public class SkillServiceImpl implements SkillService {
      */
     @Override
     public List<Skill> getSkills() {
-        logger.info("Successfully getting skills");
+        log.info("Successfully getting skills");
         return skillRepository.findAll();
     }
 
@@ -46,9 +48,9 @@ public class SkillServiceImpl implements SkillService {
      * @throws SkillIsAlreadyExistException the user tried to add a skill tha already exist
      */
     @Override
-    public Skill addSkill(SkillDto skillDto) throws BusinessException, SkillIsAlreadyExistException, SkillCreationException {
+    public Skill addSkill(SkillDto skillDto) throws RCMRuntimeException, SkillIsAlreadyExistException, SkillCreationException {
         Skill skill = new Skill();
-        Skill skillFromDb = skillRepository.findById(skill.getId()).orElseThrow(() -> new BusinessException("Skill not found"));
+        Skill skillFromDb = skillRepository.findById(skill.getId()).orElseThrow(() -> new RCMRuntimeException("Skill not found"));
         if (skillDto == null) {
             throw new SkillCreationException("Null Skill");
         }
@@ -57,7 +59,7 @@ public class SkillServiceImpl implements SkillService {
         }
         skill.setId(skillFromDb.getId());
         skill.setTitle(skillFromDb.getTitle());
-        logger.info("Successfully adding skills");
+        log.info("Successfully adding skills");
         return skillRepository.save(skill);
     }
 
@@ -69,9 +71,8 @@ public class SkillServiceImpl implements SkillService {
      * @return the list
      */
     @Override
-    public List<Skill> splitSkill(SkillDto skillDto) throws BusinessException, SkillCreationException {
-        Skill skill = new Skill();
-        Skill skillFromDb = skillRepository.findSkillByTitle(skillDto.getTitle()).orElseThrow(() -> new BusinessException("Skill not found"));
+    public List<Skill> splitSkill(SkillDto skillDto) throws RCMRuntimeException, SkillCreationException {
+        Skill skillFromDb = skillRepository.findSkillByTitle(skillDto.getTitle()).orElseThrow(() -> new RCMRuntimeException("Skill not found"));
         if (skillDto == null) {
             throw new SkillCreationException("Null Skill");
         }
@@ -91,7 +92,7 @@ public class SkillServiceImpl implements SkillService {
             skillRepository.save(splitSkill);
             newSkillsArray.add(splitSkill);
         }
-        logger.info("Successfully splitting skills");
+        log.info("Successfully splitting skills");
         return newSkillsArray;
     }
 
@@ -102,13 +103,13 @@ public class SkillServiceImpl implements SkillService {
      * @return the list
      */
     @Override
-    public Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException {
-        Skill skillFromDb = skillRepository.findSkillByTitle(skillDto.getTitle()).orElseThrow(() -> new BusinessException("Skill not found"));
-        Skill skillFromDb2 = skillRepository.findSkillByTitle(skillDto2.getTitle()).orElseThrow(() -> new BusinessException("Skill not found"));
+    public Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws RCMRuntimeException {
+        Skill skillFromDb = skillRepository.findSkillByTitle(skillDto.getTitle()).orElseThrow(() -> new RCMRuntimeException("Skill not found"));
+        Skill skillFromDb2 = skillRepository.findSkillByTitle(skillDto2.getTitle()).orElseThrow(() -> new RCMRuntimeException("Skill not found"));
         deleteSkill(skillFromDb.getId());
         skillFromDb2.setTitle(skillFromDb.getTitle() + " " + skillFromDb2.getTitle());
         skillRepository.save(skillFromDb2);
-        logger.info("Successfully merging skills");
+        log.info("Successfully merging skills");
         return skillFromDb2;
     }
 
@@ -128,7 +129,7 @@ public class SkillServiceImpl implements SkillService {
                 skill.setId(skillOptional.get().getId());
             }
         }
-        logger.info("Successfully import skills from excel");
+        log.info("Successfully import skills from excel");
         return skills;
     }
 
@@ -139,11 +140,11 @@ public class SkillServiceImpl implements SkillService {
      * @return the list
      */
     @Override
-    public boolean deleteSkill(int skillDtoId) throws BusinessException {
-        skillRepository.findById(skillDtoId).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + skillDtoId));
+    public boolean deleteSkill(int skillDtoId) throws RCMRuntimeException {
+        skillRepository.findById(skillDtoId).orElseThrow(() -> new RCMRuntimeException("Cannot find applicant with id:" + skillDtoId));
 
         skillRepository.deleteById(skillDtoId);
-        logger.info("Successfully delete skills");
+        log.info("Successfully delete skills");
         return true;
     }
 
@@ -165,7 +166,7 @@ public class SkillServiceImpl implements SkillService {
                 }
             }
         }
-        logger.info("Successfully adding applicant skills");
+        log.info("Successfully adding applicant skills");
     }
 
     /**
@@ -186,8 +187,7 @@ public class SkillServiceImpl implements SkillService {
                 }
             }
         }
-        logger.info("Successfully adding jobOffer skills");
+        log.info("Successfully adding jobOffer skills");
     }
-
 
 }

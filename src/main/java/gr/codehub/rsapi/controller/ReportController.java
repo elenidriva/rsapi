@@ -2,29 +2,26 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.ApplicantNotMatchedDto;
 import gr.codehub.rsapi.dto.OfferedRequestedDto;
-import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.service.ReportService;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
+@RequiredArgsConstructor
+@RestController("reports")
 public class ReportController {
 
-    private ReportService reportService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
+    private final ReportService reportService;
+
 
     /**
      * Endpoint get the 20 most requested matches (reporting)
      *
      * @return list of requested matches
      */
-    @GetMapping("requested")
+    @GetMapping("/getMostRequestedSkills")
     public List<OfferedRequestedDto> getMostRequestedSkills() {
         return reportService.getMostRequestedSkills();
     }
@@ -34,7 +31,7 @@ public class ReportController {
      *
      * @return list of offered skills
      */
-    @GetMapping("offered")
+    @GetMapping("/getMostOfferedSkills")
     public List<OfferedRequestedDto> getMostOfferedSkills() {
         return reportService.getMostOfferedSkills();
     }
@@ -45,7 +42,7 @@ public class ReportController {
      *
      * @return list of ApplicantNotMatchedDto
      */
-    @GetMapping("notMatchedSkills")
+    @GetMapping("/getNotMatchedSkills")
     public List<ApplicantNotMatchedDto> getNotMatchedSkills() {
         return reportService.getNotMatchedSkills();
 
