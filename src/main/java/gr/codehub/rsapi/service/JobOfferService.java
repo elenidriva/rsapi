@@ -2,11 +2,11 @@ package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.BusinessException;
 import gr.codehub.rsapi.exception.JobOfferCreationException;
 import gr.codehub.rsapi.exception.JobOfferIsInactive;
 import gr.codehub.rsapi.exception.JobOfferNotFoundException;
 import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.model.JobOffer;
 
 import java.time.LocalDate;
@@ -37,7 +37,7 @@ public interface JobOfferService {
      * @throws JobOfferNotFoundException the job offer not found exception
      * @throws JobOfferUpdateException   the job offer update exception
      */
-    JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws BusinessException, JobOfferUpdateException;
+    JobOffer updateJobOffer(JobOfferDto jobOfferDto, int jobOfferId) throws RCMRuntimeException, JobOfferUpdateException;
 
 
     /**
@@ -47,7 +47,7 @@ public interface JobOfferService {
      * @return the job offer
      * @throws JobOfferCreationException the job offer creation exception
      */
-    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws BusinessException, JobOfferCreationException;
+    JobOffer addJobOffer(JobOfferDto jobOfferDto) throws RCMRuntimeException, JobOfferCreationException;
 
     /**
      * Find job offers by criteria list.
@@ -67,7 +67,7 @@ public interface JobOfferService {
      * @throws JobOfferNotFoundException the job offer not found exception
      * @throws JobOfferIsInactive        the job offer is inactive
      */
-    boolean setJobOfferInactive(int jobOfferIndex) throws BusinessException, JobOfferIsInactive;
+    boolean setJobOfferInactive(int jobOfferIndex) throws RCMRuntimeException, JobOfferIsInactive;
 
 
     /**

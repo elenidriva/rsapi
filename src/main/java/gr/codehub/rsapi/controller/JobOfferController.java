@@ -3,54 +3,60 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.JobOfferDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.JobOfferCreationException;
+import gr.codehub.rsapi.exception.JobOfferIsInactive;
+import gr.codehub.rsapi.exception.JobOfferNotFoundException;
+import gr.codehub.rsapi.exception.JobOfferUpdateException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.io.ExcelJobOfferReader;
-import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.JobOffer;
 import gr.codehub.rsapi.service.JobOfferService;
 import gr.codehub.rsapi.service.SkillService;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
+/**
+ * JobOfferController: Responsible for exposing all the available operations regarding a {@link JobOffer}
+ */
+@RequiredArgsConstructor
+@RestController("jobOffer")
 public class JobOfferController {
 
     private final JobOfferService jobOfferService;
     private final SkillService skillService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
-
 
     /**
-     * Endpoint for adding a job offer
+     * Adds a new job offer
      *
-     * @param jobOfferDto gets from the user a dto object
-     * @return json contained the added job offer
+     * @param jobOfferDto - the dto object of a job offer
+     * @return the newly added job offer's info
      * @throws JobOfferCreationException the user tried to add a job offer without the required fields
      */
-    @PostMapping("jobOffer")
-    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws BusinessException, JobOfferCreationException {
-        logger.info("Add Job Offer");
+    @PostMapping
+    public JobOffer addJobOffer(@RequestBody JobOfferDto jobOfferDto) throws RCMRuntimeException, JobOfferCreationException {
         return jobOfferService.addJobOffer(jobOfferDto);
     }
 
     /**
-     * Endpoint for finding a job offer using job offer`s id
+     * Retrieves a job offer given an id
      *
-     * @param id the id of the job offer
+     * @pathVariable id - the id of the job offer
      * @return json contained a job offer
      * @throws JobOfferNotFoundException  the user tried to find a job offer tha does not exist
-     * @throws ApplicantNotFoundException the user tried to find an applicant tha does not exist
+     * @throws RCMRuntimeException the user tried to find an applicant tha does not exist
      */
-    @GetMapping("jobOffer/{id}")
-    public JobOffer getJobOffer(@PathVariable int id) throws JobOfferNotFoundException {
-        logger.info("Get job Offer");
+    @GetMapping("/{id}")
+    public JobOffer getJobOffer(@PathVariable int id) {
         return jobOfferService.getJobOffer(id);
     }
 
@@ -63,16 +69,15 @@ public class JobOfferController {
      * @throws JobOfferUpdateException   the user tried to update a job offer and the job offer is inactive
      * @throws JobOfferNotFoundException the user tried to find a job offer and the job offer does not exist
      */
-    @PutMapping("jobOffer/{id}")
-    public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto, @PathVariable int id)
-            throws BusinessException, JobOfferUpdateException {
-        logger.info("Update job Offer");
+    @PutMapping("/{id}")
+    public JobOffer updateJobOffer(@RequestBody JobOfferDto jobOfferDto,
+                                   @PathVariable int id)
+            throws RCMRuntimeException, JobOfferUpdateException {
         return jobOfferService.updateJobOffer(jobOfferDto, id);
     }
 
-    @GetMapping("jobOffer")
+    @GetMapping
     public List<JobOffer> getJobOffers() {
-        logger.info("List getting  job Offers");
         return jobOfferService.getJobOffers();
     }
 
@@ -84,12 +89,11 @@ public class JobOfferController {
      * @param jobOfferDate  the date job offer was made
      * @return applicants by job offer
      */
-    @GetMapping("jobOffer/criteria")
+    @GetMapping("/criteria")
     public List<JobOffer> findJobOffersByCriteria(
             @RequestParam(required = false) String positionTitle,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) LocalDate jobOfferDate) {
-        logger.info("Find by criteria Job Offer");
         return jobOfferService.findJobOffersByCriteria(positionTitle, region, jobOfferDate);
 
     }
@@ -102,9 +106,8 @@ public class JobOfferController {
      * @throws JobOfferNotFoundException the user tried to find a job offer tha does not exist
      * @throws JobOfferIsInactive        the user tried to find a job offer and the applicant is inactive
      */
-    @PutMapping("jobOffer/{id}/inactive")
-    public boolean setJobOfferInactive(@PathVariable int id) throws BusinessException, JobOfferIsInactive {
-        logger.info("Setting inactive job offers");
+    @PutMapping("/{id}/inactive")
+    public boolean setJobOfferInactive(@PathVariable int id) throws RCMRuntimeException, JobOfferIsInactive {
         return jobOfferService.setJobOfferInactive(id);
     }
 
@@ -114,7 +117,7 @@ public class JobOfferController {
      * @return returns list of JobOffers and save in DB
      * @throws FileNotFoundException if file did not found
      */
-    @GetMapping(value = "excelJobOffer")
+    @GetMapping(value = "/loadJobOffer")
     public List<JobOffer> addJobOfferFromExcel() throws FileNotFoundException {
         ExcelJobOfferReader excelJobOfferReader = new ExcelJobOfferReader();
         List<JobOffer> jobOfferList = excelJobOfferReader.readFromExcel();
@@ -122,7 +125,6 @@ public class JobOfferController {
         skillService.addJobOfferSkillsFromReader(savedJobOffers);
         jobOfferService.addJobOfferSkills(savedJobOffers);
         System.out.println(savedJobOffers);
-        logger.info("Import data");
         return savedJobOffers;
     }
 

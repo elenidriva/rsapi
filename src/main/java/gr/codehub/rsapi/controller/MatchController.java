@@ -2,37 +2,36 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.FullMatchDto;
 import gr.codehub.rsapi.dto.JobOffersApplicantsDto;
-import gr.codehub.rsapi.exception.BusinessException;
-import gr.codehub.rsapi.logging.SLF4JExample;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.model.Match;
 import gr.codehub.rsapi.service.MatchService;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
+@RequiredArgsConstructor
+@RestController("match")
 public class MatchController {
 
-    MatchService matchService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
-
+    private final MatchService matchService;
 
     /**
      * Endpoint delete a mach by id
      *
      * @param matchId
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    @DeleteMapping("match/{id}")
-    public Match deleteMatch(@PathVariable int matchId) throws BusinessException {
-        logger.info("Delete matches");
+    @DeleteMapping("/{id}")
+    public Match deleteMatch(@PathVariable int matchId) throws RCMRuntimeException {
         return matchService.deleteMatch(matchId);
     }
 
@@ -41,10 +40,8 @@ public class MatchController {
      *
      * @return list and save in DB
      */
-    @GetMapping("getMostRecentFinalisedMatches")
+    @GetMapping("/final")
     public List<Match> getMostRecentFinalisedMatches() {
-
-        logger.info("Getting most recent finalized");
         return matchService.getMostRecentFinalisedMatches();
     }
 
@@ -52,12 +49,11 @@ public class MatchController {
      * Endpoint to make a mach finalized by id
      *
      * @return list of finalized matches and save in DB
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      * @parammatchId
      */
-    @PutMapping("match")
-    public Match finaliseMatch(@RequestParam int matchId) throws BusinessException {
-        logger.info("Getting finalized matches");
+    @PutMapping
+    public Match finaliseMatch(@RequestParam int matchId) throws RCMRuntimeException {
         return matchService.finaliseMatch(matchId);
 
     }
@@ -68,12 +64,11 @@ public class MatchController {
      *
      * @param applicantId, jobOfferId
      * @return the manual match that recruiter create
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    @PostMapping("match")
+    @PostMapping
     public Match createManualMatch(@RequestParam int applicantId,
-                                   @RequestParam int jobOfferId) throws BusinessException {
-        logger.info("Create manual matches");
+                                   @RequestParam int jobOfferId) throws RCMRuntimeException {
         return matchService.createManualMatch(applicantId, jobOfferId);
     }
 
@@ -82,9 +77,8 @@ public class MatchController {
      *
      * @return list JobOffersApplicantsDto
      */
-    @GetMapping("partialMatches")
+    @GetMapping("/partial")
     public List<JobOffersApplicantsDto> findPartialMatches() {
-        logger.info("Find partial matches ");
         return matchService.findPartialMatches();
     }
 
@@ -93,9 +87,8 @@ public class MatchController {
      *
      * @return list FullMatchDto
      */
-    @GetMapping("fullMatch")
+    @GetMapping("/full")
     public List<FullMatchDto> findFullMatches() {
-        logger.info("Find full matches");
         return matchService.findFullMatches();
 
     }
@@ -106,11 +99,10 @@ public class MatchController {
      * @param startDate, endDate
      * @return list of finalized Matches that the recruiter wanted (reporting)
      */
-    @GetMapping("reports")
+    @GetMapping
     public List<Match> getFinalisedfMatchesWithDateRange(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws BusinessException {
-        logger.info("Find full matches");
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws RCMRuntimeException {
         return matchService.getFinalisedfMatchesWithDateRange(startDate, endDate);
     }
 
@@ -119,11 +111,10 @@ public class MatchController {
      *
      * @param applicantIndex, jobOfferIndex
      * @return boolean
-     * @throws BusinessException
+     * @throws RCMRuntimeException
      */
-    @GetMapping("check")
-    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws BusinessException {
-        logger.info("Checking Duplicates");
+    @GetMapping("/check")
+    public boolean checkForDuplicate(@RequestParam int applicantIndex, @RequestParam int jobOfferIndex) throws RCMRuntimeException {
         return matchService.checkForDuplicate(applicantIndex, jobOfferIndex);
 
     }
@@ -133,12 +124,10 @@ public class MatchController {
      *
      * @return list of proposed matches
      */
-    @GetMapping("proposed")
+    @GetMapping("/proposed")
     public List<Match> getProposedMatches() {
-        logger.info("Getting proposed matches");
         return matchService.getProposedMatches();
 
     }
-
 
 }

@@ -1,7 +1,7 @@
 package gr.codehub.rsapi.service;
 
 import gr.codehub.rsapi.dto.SkillDto;
-import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.exception.SkillCreationException;
 import gr.codehub.rsapi.exception.SkillIsAlreadyExistException;
 import gr.codehub.rsapi.exception.SkillNotFoundException;
@@ -31,7 +31,7 @@ public interface SkillService {
      * @throws SkillNotFoundException       the skill not found exception
      * @throws SkillIsAlreadyExistException the skill is already exist exception
      */
-    Skill addSkill(SkillDto skillDto) throws BusinessException, SkillIsAlreadyExistException, SkillCreationException;
+    Skill addSkill(SkillDto skillDto) throws RCMRuntimeException, SkillIsAlreadyExistException, SkillCreationException;
 
 
     /**
@@ -40,7 +40,7 @@ public interface SkillService {
      * @param skillDto the skills
      * @return the list
      */
-    List<Skill> splitSkill(SkillDto skillDto) throws BusinessException, SkillCreationException;
+    List<Skill> splitSkill(SkillDto skillDto) throws RCMRuntimeException, SkillCreationException;
 
     /**
      * Add merging skills
@@ -48,7 +48,7 @@ public interface SkillService {
      * @param skillDto the skills
      * @return the list
      */
-    Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws BusinessException;
+    Skill mergeSkills(SkillDto skillDto, SkillDto skillDto2) throws RCMRuntimeException;
 
     /**
      * Add skills from reader list.
@@ -64,7 +64,7 @@ public interface SkillService {
      * @param skillDtoId the skills
      * @return the list
      */
-    boolean deleteSkill(int skillDtoId) throws BusinessException;
+    boolean deleteSkill(int skillDtoId) throws RCMRuntimeException;
 
     /**
      * Add applicant skills from reader.

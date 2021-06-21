@@ -1,13 +1,10 @@
 package gr.codehub.rsapi.service;
 
+import gr.codehub.rsapi.commons.ApplicantErrorCodes;
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
 import gr.codehub.rsapi.enums.Status;
-import gr.codehub.rsapi.exception.ApplicantCreationException;
-import gr.codehub.rsapi.exception.ApplicantIsInactive;
-import gr.codehub.rsapi.exception.ApplicantNotFoundException;
-import gr.codehub.rsapi.exception.ApplicantUpdateException;
-import gr.codehub.rsapi.exception.BusinessException;
+import gr.codehub.rsapi.exception.ApplicantException;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.model.ApplicantSkill;
 import gr.codehub.rsapi.model.Skill;
@@ -20,8 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static gr.codehub.rsapi.commons.ApplicantErrorCodes.APPLICANT_CREATION_INVALID_SKILL_EXCEPTION;
+import static gr.codehub.rsapi.commons.ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION;
 /*
-* *
 TODO:
 * 1. Exception Error Codes in Separate File
 * 2. Declarative Errors
@@ -29,7 +28,8 @@ TODO:
 * 4. Deprecated methods
 * 5.addApplicant logic when insufficient data
 * 6. Fix JavaDocs
- * */
+ */
+
 /**
  * ApplicantServiceImpl: Responsible for handling the Applicant related functions
  */
@@ -45,13 +45,15 @@ public class ApplicantServiceImpl implements ApplicantService {
     /**
      * This method takes the data from dto and passes the data needed to create the applicant and saves it in the base
      *
-     * @param applicantDto gets from the user a dto object
-     * @return applicant with id and saves it to the data base
-     * @throws ApplicantCreationException the user tried to create an applicant without the required fields
+     * @param applicantDto - the request POJO
+     * @return  the newly added applicant
+     * @throws ApplicantException the user tried to create an applicant without the required fields
      */
     @Override
-    public Applicant addApplicant(ApplicantDto applicantDto) throws BusinessException {
-        if (applicantDto == null) throw new ApplicantCreationException("You did not add any of the required fields");
+    public Applicant addApplicant(ApplicantDto applicantDto) throws ApplicantException {
+        if (applicantDto == null)
+            throw new ApplicantException(ApplicantErrorCodes.APPLICANT_CREATION_EXCEPTION.getCode(),
+                    ApplicantErrorCodes.APPLICANT_CREATION_EXCEPTION.getMessage());
         Applicant applicant = Applicant.builder()
                 .firstName(applicantDto.getFirstName())
                 .lastName(applicantDto.getLastName())
@@ -65,7 +67,10 @@ public class ApplicantServiceImpl implements ApplicantService {
                 .build();
         applicantRepository.save(applicant);
 
-        Applicant applFromRep = applicantRepository.findById(applicant.getId()).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicant.getId()));
+        Applicant applFromRep = applicantRepository.findById(applicant.getId()).orElseThrow(() ->
+                new ApplicantException(APPLICANT_NOT_FOUND_EXCEPTION.getCode(),
+                        APPLICANT_NOT_FOUND_EXCEPTION.getMessage()));
+
         ApplicantSkill appSkill = new ApplicantSkill();
         appSkill.setApplicant(applFromRep);
         applicantDto.getApplicantSkillList().forEach(o -> {
@@ -76,88 +81,83 @@ public class ApplicantServiceImpl implements ApplicantService {
             } else {
                 try {
                     applicantRepository.deleteById(applicant.getId());
-                    throw new BusinessException("Please insert a skill that exists in the DB. Your applicant profile was not created.");
-                } catch (BusinessException e) {
-                    log.info("Successfully add Applicant");
+                    throw new ApplicantException(APPLICANT_CREATION_INVALID_SKILL_EXCEPTION.getCode(),
+                            APPLICANT_CREATION_INVALID_SKILL_EXCEPTION.getMessage());
+                } catch (ApplicantException e) {
+                    log.info("Completely wrong logic...");
                 }
             }
         });
         return applicant;
     }
 
-    @Deprecated
-    public List<ApplicantSkill> addAppSkillToApplicant(List<ApplicantSkill> applicantSkillList, Applicant applicant) {
-        for (ApplicantSkill applicantSkill : applicantSkillList) {
-            applicantSkill.setApplicant(applicant);
-        }
-        log.info("Successfully add Skills to applicant");
-        return applicantSkillRepository.saveAll(applicantSkillList);
-    }
 
     /**
      * This method takes an id from the user and searches the repository if it exists
      * If the status is inactive we tell him it's Inactive and he does it active
      *
      * @param applicantIndex the applicant id given by the user
-     * @return to successfully change the status to inactive returns true
-     * @throws ApplicantNotFoundException the user tried to find an applicant with id that does not exist
-     * @throws ApplicantIsInactive        the user tried to do inactive an applicant that is already inactive
+     * @return true in case the applicant was set to inactive
+     * @throws ApplicantException in case the applicant does not even exist
      */
     @Override
-    public boolean setApplicantInactive(int applicantIndex) throws BusinessException, ApplicantIsInactive {
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
+    public boolean setApplicantInactive(int applicantIndex) throws ApplicantException {
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).
+                orElseThrow(() -> new ApplicantException(ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getCode(),
+                        ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getCode()));
         Applicant applicant;
-        if (applicantInDb.getStatus().equals(Status.INACTIVE))
-            throw new ApplicantIsInactive("Applicant with id:" + applicantIndex + " is already inactive.");
-        else applicantInDb.setStatus(Status.ACTIVE);
-        applicant = applicantInDb;
-        applicant.setStatus(Status.INACTIVE);
-        applicantRepository.save(applicant);
-        log.info("Successfully setting applicant inactive");
+        if (!applicantInDb.getStatus().equals(Status.INACTIVE)) {
+            applicant = applicantInDb;
+            applicant.setStatus(Status.INACTIVE);
+            applicantRepository.save(applicant);
+            log.info(String.format("Successfully set applicant with id [%s] to inactive.", applicant.getId()));
+        }
         return true;
     }
 
 
     /**
-     * This method searches the base if there is an applicant with this id and if there is it returns it
+     * Retrieves an applicant given an id
      *
      * @param applicantIndex the id of applicant given by the user
-     * @return the appliacnt based on the id given by the user
-     * @throws ApplicantNotFoundException The user tried to find an applicant that does not exist in the data base
+     * @return the applicant based on the id given by the user
+     * @throws ApplicantException in case the user does not even exist in the DB
      */
     @Override
-    public Applicant getApplicant(int applicantIndex) throws BusinessException {
-        log.info("Successfully getting applicant");
-        return applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("There is no such Applicant in the DB."));
+    public Applicant getApplicant(int applicantIndex) throws ApplicantException {
+        return applicantRepository.findById(applicantIndex).orElseThrow(() ->
+                new ApplicantException(ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getCode(),
+                        ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getMessage()));
     }
 
     /**
      * Takes the data from dto and passes the data needed to make update the applicant
      *
-     * @param applicantDto   gets from the user a dto object
-     * @param applicantIndex takes the ID of an applicant and finds if exists
+     * @param applicantDto   - the request POJO
+     * @param applicantIndex - the index of the applicant the update will be performed on
      * @return the applicant updated and saves it to the base
-     * @throws ApplicantNotFoundException The user tried to update an applicant that does not exist
-     * @throws ApplicantUpdateException   The user tried to update the applicant but the applicant is inactive
+     * @throws ApplicantException in case the user does not even exist in the DB
      */
     @Override
-    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws BusinessException, ApplicantUpdateException {
+    public Applicant updateApplicant(ApplicantDto applicantDto, int applicantIndex) throws ApplicantException {
 
-        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
-        if (applicantInDb.getStatus() == Status.INACTIVE)
-            throw new ApplicantUpdateException("Failed to update Applicant, because the Applicant is inactive");
-        applicantInDb.setFirstName(applicantDto.getFirstName());
-        applicantInDb.setLastName(applicantDto.getLastName());
-        applicantInDb.setStatus(Status.ACTIVE);
-        applicantInDb.setAddress(applicantDto.getAddress());
-        applicantInDb.setDegreeLevel(applicantDto.getDegreeLevel());
-        applicantInDb.setExperienceLevel(applicantDto.getExperienceLevel());
-        applicantInDb.setApplicantSkillList(applicantDto.getApplicantSkillList());
-        applicantInDb.setRegion(applicantDto.getRegion());
-
-        applicantRepository.save(applicantInDb);
-        log.info("Successfully updating applicant");
-
+        Applicant applicantInDb = applicantRepository.findById(applicantIndex).orElseThrow(() ->
+                new ApplicantException(String.format(ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getCode(), applicantIndex),
+                        ApplicantErrorCodes.APPLICANT_NOT_FOUND_EXCEPTION.getMessage()));
+        if (applicantInDb.getStatus() != Status.INACTIVE) {
+            applicantInDb.toBuilder()
+                    .firstName(applicantDto.getFirstName())
+                    .lastName(applicantDto.getLastName())
+                    .status(Status.ACTIVE)
+                    .address(applicantDto.getAddress())
+                    .degreeLevel(applicantDto.getDegreeLevel())
+                    .experienceLevel(applicantDto.getExperienceLevel())
+                    .applicantSkillList(applicantDto.getApplicantSkillList())
+                    .region(applicantDto.getRegion())
+                    .build();
+            log.info(String.format("Successfully updating applicant with id: [%s]", applicantIndex));
+            applicantRepository.save(applicantInDb);
+        }
         return applicantInDb;
     }
 
@@ -174,55 +174,19 @@ public class ApplicantServiceImpl implements ApplicantService {
      * @param firstName the first name of the applicant
      * @param lastName  the last name of the applicant
      * @param region    the region of the applicant
-     * @param date      the date that appllicant made the application
+     * @param date      the date that applicant made the application
      * @return a list of applicants based on the criteria that become from the user
      */
     @Override
     public List<Applicant> findApplicantsByCriteria(String firstName, String lastName, Region region, LocalDate date) {
-
-        log.info("Successfully find applicant by criteria");
+        log.info("Successfully retrieve a list of applicants with the criteria given.");
         return applicantRepository.findApplicantByCriteria(firstName, lastName, region, date);
-
     }
 
-
     /**
-     * This method searches the base if there is an applicant with this id and if there is it delete it
+     * Saves all available applicant skills into the DB
      *
-     * @param applicantIndex takes the ID of an applicant and finds if exists
-     * @return true if applicant was actually deleted
-     * @throws ApplicantNotFoundException the user tried to delete an applicant with id that does not exist in data base
-     */
-    @Override
-    public boolean deleteApplicant(int applicantIndex) throws BusinessException {
-        applicantRepository.findById(applicantIndex).orElseThrow(() -> new BusinessException("Cannot find applicant with id:" + applicantIndex));
-        applicantRepository.deleteById(applicantIndex);
-        log.info("Successfully delete applicant");
-        return true;
-    }
-
-    /**
-     * @param applicant
-     * @param skill
-     * @return
-     */
-    public boolean insertApplicantSkill(Applicant applicant, Skill skill) {
-        ApplicantSkill applicantSkill = new ApplicantSkill();
-        applicantSkill.setApplicant(applicant);
-        Skill skillInDb = skillRepository.findBySkillTitle(skill.getTitle());
-        if (skillInDb == null) {
-            skillRepository.save(new Skill(skillInDb.getTitle()));
-            return true;
-        }
-        log.info("Successfully insert applicant skill");
-        return false;
-    }
-
-    /**
-     * ayti i methodos vazei se kathe applicant ola ta applicant skills
-     * kai sozei stin vasi
-     *
-     * @param applicants oso uparxoyn applicants sunexise na sozeis ola ta applicant skills tous
+     * @param applicants - a list of applicants whose skills will be saved
      */
     @Override
     public void addApplicantSkills(List<Applicant> applicants) {
@@ -232,16 +196,23 @@ public class ApplicantServiceImpl implements ApplicantService {
         }
     }
 
+    /**
+     * Saves the list of applicants into the DB
+     *
+     * @param applicants - a list of applicants that will be saved
+     */
     @Override
     public List<Applicant> addApplicants(List<Applicant> applicants) {
         log.info("Successfully add applicants");
         return applicantRepository.saveAll(applicants);
     }
 
-    @Override
-    public Applicant addApplicant(Applicant applicant) {
-        log.info("Successfully adding applicant");
-        return applicantRepository.save(applicant);
+    @Deprecated
+    public List<ApplicantSkill> addAppSkillToApplicant(List<ApplicantSkill> applicantSkillList, Applicant applicant) {
+        for (ApplicantSkill applicantSkill : applicantSkillList) {
+            applicantSkill.setApplicant(applicant);
+        }
+        log.info(String.format("Successfully added new Skills to applicant with id %s", applicant.getId()));
+        return applicantSkillRepository.saveAll(applicantSkillList);
     }
-
 }

@@ -18,7 +18,7 @@ import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

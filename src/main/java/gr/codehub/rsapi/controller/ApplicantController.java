@@ -2,133 +2,129 @@ package gr.codehub.rsapi.controller;
 
 import gr.codehub.rsapi.dto.ApplicantDto;
 import gr.codehub.rsapi.enums.Region;
-import gr.codehub.rsapi.exception.*;
+import gr.codehub.rsapi.exception.RCMRuntimeException;
 import gr.codehub.rsapi.io.ExcelApplicantReader;
-import gr.codehub.rsapi.logging.SLF4JExample;
 import gr.codehub.rsapi.model.Applicant;
 import gr.codehub.rsapi.service.ApplicantService;
 import gr.codehub.rsapi.service.SkillService;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
+/**
+ * ApplicantController: Responsible for exposing all the available operations regarding an {@link Applicant}
+ */
+@RestController("applicant")
+@RequiredArgsConstructor
 public class ApplicantController {
 
     private final ApplicantService applicantService;
     private final SkillService skillService;
-    private static final Logger logger = LoggerFactory.getLogger(SLF4JExample.class);
-
 
     /**
-     * Provides an endpoint that allows the user to insert an applicant
+     * Adds a new Applicant
      *
-     * @param applicantDto The applicantDto object
-     * @return Applicant  It returns the inserted applicant object
-     * @throws ApplicantCreationException the user tried to add an applicant without the required fields
+     * @param applicantDto - dto object with applicant-related fields.
+     * @return Applicant  - returns the inserted applicant object
+     * @throws RCMRuntimeException the user tried to add an applicant without the required fields
      */
-    @PostMapping("applicant")
-    public Applicant addApplicant(@RequestBody ApplicantDto applicantDto) throws BusinessException {
-        logger.info("Add Applicant failed");
+    @PostMapping
+    public Applicant postApplicant(@RequestBody ApplicantDto applicantDto) throws RCMRuntimeException {
         return applicantService.addApplicant(applicantDto);
     }
 
 
     /**
-     * Endpoint for updating an applicant using applicant`s id
+     * Updates the applicant whose id is given
      *
-     * @param applicantDto gets from the user a dto object
-     * @param id           the id of the applicant
+     * @param applicantDto - dto object with applicant-related fields.
      * @return json contained the updated applicant
-     * @throws ApplicantNotFoundException the user tried to update an applicant tha does not exists
-     * @throws ApplicantUpdateException   the user tried to update an applicant and the applicant is inactive
+     * @throws RCMRuntimeException the user tried to update an applicant that does not exist
+     * @pathVariable id - the id of the applicant we want to update
      */
-    @PutMapping("applicant/{id}")
-    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto, @PathVariable int id) throws BusinessException, ApplicantUpdateException {
-        logger.info("Update applicant failed");
+    @PutMapping("/{id}")
+    public Applicant updateApplicant(@RequestBody ApplicantDto applicantDto,
+                                     @PathVariable int id) throws RCMRuntimeException {
         return applicantService.updateApplicant(applicantDto, id);
     }
 
     /**
-     * Endpoint for finding an applicant using applicant`s id
+     * Retrieves an applicant given an id
      *
-     * @param id the id of the applicant
      * @return json contained an applicant
-     * @throws ApplicantNotFoundException the user tried to find an applicant that does not exists
+     * @throws RCMRuntimeException the user tried to find an applicant that does not exist
+     * @pathVariable id the id of the applicant
      */
-    @GetMapping("applicant/{id}")
-    public Applicant getApplicant(@PathVariable int id) throws BusinessException {
-        logger.info("Get applicant failed");
+    @GetMapping("/{id}")
+    public Applicant getApplicant(@PathVariable int id) throws RCMRuntimeException {
         return applicantService.getApplicant(id);
     }
 
 
     /**
-     * Endpoint for finding an applicant
+     * Retrieves the list of Applicants
      *
      * @return a list of applicants
      */
-    @GetMapping("applicant")
+    @GetMapping
     public List<Applicant> getApplicants() {
-        logger.info("Get list of applicants");
         return applicantService.getApplicants();
     }
 
     /**
-     * Endpoint for finding an applicant by criteria
+     * Finds all applicants matching the criteria given
      *
-     * @param firstName       the first name of the applicant
-     * @param lastName        the last name of the applicant
-     * @param region          the region of the applicant
-     * @param applicationDate the date applicant made the application
-     * @return applicants by criteria
+     * @param firstName       - the first name of the applicant
+     * @param lastName        - the last name of the applicant
+     * @param region          - the region of the applicant
+     * @param applicationDate - the date applicant made the application
+     * @return a list of applicants matching the given criteria or else an empty list
      */
-    @GetMapping("applicant/criteria")
+    @GetMapping("/criteria")
     public List<Applicant> findApplicantsByCriteria(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) Region region,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate applicationDate) {
-        logger.info("List of applicant by criteria");
         return applicantService.findApplicantsByCriteria(firstName, lastName, region, applicationDate);
     }
 
 
     /**
-     * Endpoint takes the id of an applicant and makes him inactive
+     * Sets an applicant to inactive given an id
      *
      * @param id the id of the applicant
-     * @return returns true if it has become inactive false if it has not been
-     * @throws ApplicantNotFoundException the user tried to find an applicant tha does not exist
-     * @throws ApplicantIsInactive        the user tried to find an applicant and the applicant is inactive
+     * @return returns true in case the operation succeeded, or else returns false
+     * @throws RCMRuntimeException the user tried to find an applicant tha does not exist
      */
-    @PutMapping("applicant/{id}/inactive")
-    public boolean setApplicantInactive(@PathVariable int id) throws BusinessException, ApplicantIsInactive {
-        logger.info("Setting applicants inactive");
+    @PutMapping("/{id}/inactive")
+    public boolean setApplicantInactive(@PathVariable int id) throws RCMRuntimeException {
         return applicantService.setApplicantInactive(id);
     }
 
     /**
-     * Endpoint to read Applicant data from Excel file
+     * Reads a list of applicants provided from an excel and saves them into the DB
      *
-     * @return returns list of Applicants and save in DB
-     * @throws FileNotFoundException if file did not found
+     * @return returns a list of Applicants
+     * @throws FileNotFoundException if file was not found
      */
-    @GetMapping(value = "excelApplicants")
+    @GetMapping(value = "/loadApplicants")
     public List<Applicant> addApplicantsFromReaderNew() throws FileNotFoundException {
         ExcelApplicantReader excelApplicantReader = new ExcelApplicantReader();
         List<Applicant> applicantList = excelApplicantReader.readFromExcel();
         List<Applicant> savedApplicants = applicantService.addApplicants(applicantList);
         skillService.addApplicantSkillsFromReader(savedApplicants);
         applicantService.addApplicantSkills(savedApplicants);
-        logger.info("Loading excel");
         return savedApplicants;
     }
 
